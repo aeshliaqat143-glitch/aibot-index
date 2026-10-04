@@ -1,0 +1,3408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PakAI 🇵🇰 — Pakistan Knowledge Assistant</title>
+<style>
+:root{
+  --green:#075b2b;
+  --green2:#0b7a3d;
+  --green3:#18a558;
+  --light:#effaf3;
+  --white:#ffffff;
+  --gold:#d4af37;
+  --text:#173322;
+  --muted:#6b7d72;
+  --border:#dcebe1;
+  --shadow:0 18px 50px rgba(4,60,30,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(24,165,88,.10),transparent 30%),
+    radial-gradient(circle at 90% 90%,rgba(212,175,55,.08),transparent 28%),
+    #f5faf7;
+  color:var(--text);
+  min-height:100vh;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.header{
+  height:76px;
+  background:rgba(255,255,255,.90);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.flag{
+  width:42px;height:42px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,var(--green),var(--green3));
+  color:white;
+  font-size:23px;
+  box-shadow:0 8px 22px rgba(7,91,43,.25);
+}
+.brand h1{font-size:20px;color:var(--green)}
+.brand p{font-size:12px;color:var(--muted);margin-top:2px}
+.status{
+  display:flex;align-items:center;gap:7px;
+  font-size:12px;color:var(--green);
+  background:var(--light);
+  padding:9px 13px;border-radius:999px;
+}
+.status i{
+  width:8px;height:8px;border-radius:50%;
+  background:#18b85a;box-shadow:0 0 0 4px #dff7e9;
+}
+.layout{
+  width:min(1500px,100%);
+  margin:auto;
+  padding:22px;
+  display:grid;
+  grid-template-columns:290px minmax(0,1fr);
+  gap:22px;
+  flex:1;
+}
+.sidebar{
+  background:rgba(255,255,255,.86);
+  border:1px solid var(--border);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:18px;
+  height:calc(100vh - 120px);
+  position:sticky;
+  top:98px;
+  overflow:auto;
+}
+.side-title{
+  font-size:12px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin:5px 5px 12px;
+}
+.search{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#f5faf7;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:10px 12px;
+  margin-bottom:18px;
+}
+.search input{
+  width:100%;border:0;outline:0;background:transparent;
+  color:var(--text);font-size:13px;
+}
+.search button{
+  border:0;background:var(--green);color:#fff;
+  width:32px;height:32px;border-radius:10px;
+}
+.quick{
+  display:grid;
+  gap:8px;
+}
+.quick button{
+  border:1px solid transparent;
+  background:#f5faf7;
+  color:#31533e;
+  border-radius:13px;
+  padding:11px 12px;
+  text-align:left;
+  font-size:13px;
+  transition:.2s;
+}
+.quick button:hover{
+  background:var(--light);
+  border-color:#bfe2cc;
+  transform:translateX(2px);
+}
+.info-box{
+  margin-top:20px;
+  background:linear-gradient(145deg,#075b2b,#0d8b47);
+  color:white;
+  padding:17px;
+  border-radius:18px;
+}
+.info-box strong{display:block;font-size:14px;margin-bottom:6px}
+.info-box span{font-size:11px;line-height:1.6;opacity:.88}
+.main{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  min-height:calc(100vh - 120px);
+}
+.chat{
+  flex:1;
+  background:rgba(255,255,255,.76);
+  border:1px solid var(--border);
+  border-radius:26px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.chat-top{
+  padding:18px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.chat-title{
+  display:flex;align-items:center;gap:10px;
+}
+.ai-dot{
+  width:36px;height:36px;border-radius:12px;
+  background:var(--green);display:grid;place-items:center;color:white;
+}
+.chat-title strong{font-size:14px}
+.chat-title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.clear{
+  border:1px solid var(--border);
+  background:white;color:#567060;
+  padding:8px 12px;border-radius:10px;font-size:12px;
+}
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:30px clamp(16px,4vw,55px);
+  scroll-behavior:smooth;
+}
+.welcome{
+  max-width:720px;
+  margin:20px auto 30px;
+  text-align:center;
+}
+.welcome-logo{
+  width:68px;height:68px;border-radius:22px;
+  background:linear-gradient(145deg,var(--green),var(--green3));
+  display:grid;place-items:center;
+  color:white;font-size:34px;
+  margin:0 auto 18px;
+  box-shadow:0 14px 30px rgba(7,91,43,.20);
+}
+.welcome h2{font-size:27px;color:var(--green);margin-bottom:8px}
+.welcome p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+}
+.suggestions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin-top:20px;
+}
+.suggestions button{
+  border:1px solid var(--border);
+  background:white;
+  color:#385744;
+  border-radius:999px;
+  padding:9px 13px;
+  font-size:12px;
+  transition:.2s;
+}
+.suggestions button:hover{
+  border-color:#9bd3af;
+  background:var(--light);
+  transform:translateY(-2px);
+}
+.message{
+  display:flex;
+  gap:10px;
+  margin:17px 0;
+  animation:appear .25s ease;
+}
+.message.user{justify-content:flex-end}
+.avatar{
+  width:34px;height:34px;border-radius:11px;
+  flex:0 0 34px;
+  display:grid;place-items:center;
+  background:var(--green);color:white;font-size:16px;
+}
+.user .avatar{
+  order:2;background:#e6f4eb;color:var(--green);
+}
+.bubble{
+  max-width:min(760px,82%);
+  padding:13px 16px;
+  border-radius:17px;
+  background:white;
+  border:1px solid var(--border);
+  color:#263e30;
+  font-size:14px;
+  line-height:1.72;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.user .bubble{
+  background:var(--green);
+  border-color:var(--green);
+  color:white;
+  border-radius:17px 17px 5px 17px;
+}
+.ai .bubble{border-radius:5px 17px 17px 17px}
+.message-actions{
+  display:flex;gap:6px;margin-top:7px;
+}
+.message-actions button{
+  border:1px solid var(--border);
+  background:white;color:#63776b;
+  border-radius:8px;padding:5px 8px;font-size:11px;
+}
+.typing{
+  display:flex;gap:5px;align-items:center;
+}
+.typing span{
+  width:6px;height:6px;background:var(--green3);
+  border-radius:50%;animation:bounce 1s infinite;
+}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+.results{
+  display:grid;
+  gap:10px;
+  margin:8px 0 20px 44px;
+}
+.result-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+}
+.result-card strong{color:var(--green);font-size:14px}
+.result-card small{
+  display:block;color:var(--muted);
+  margin:4px 0 8px;
+}
+.result-card p{
+  font-size:12px;line-height:1.6;color:#4d6255;
+}
+.result-card button{
+  margin-top:10px;
+  border:0;background:var(--light);
+  color:var(--green);padding:7px 10px;
+  border-radius:9px;font-size:11px;
+}
+.composer{
+  padding:15px 18px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(255,255,255,.92);
+}
+.input-wrap{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  border:1px solid #cfe4d7;
+  background:#f8fcf9;
+  border-radius:18px;
+  padding:8px;
+  transition:.2s;
+}
+.input-wrap:focus-within{
+  border-color:#79bf91;
+  box-shadow:0 0 0 4px rgba(24,165,88,.07);
+}
+.input-wrap textarea{
+  resize:none;
+  min-height:42px;
+  max-height:130px;
+  flex:1;
+  border:0;outline:0;
+  background:transparent;
+  padding:10px 8px;
+  color:var(--text);
+  line-height:1.45;
+}
+.tool-btn{
+  width:42px;height:42px;border-radius:12px;
+  border:1px solid var(--border);
+  background:white;color:var(--green);
+}
+.send{
+  width:44px;height:44px;
+  border:0;border-radius:13px;
+  background:var(--green);color:white;
+  font-size:17px;
+}
+.composer-note{
+  text-align:center;color:#8a9b91;
+  font-size:10px;margin-top:8px;
+}
+@keyframes appear{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+@keyframes bounce{
+  0%,80%,100%{transform:translateY(0);opacity:.5}
+  40%{transform:translateY(-5px);opacity:1}
+}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;padding:12px}
+  .sidebar{
+    position:static;height:auto;
+    display:none;
+  }
+  .header{padding:0 15px}
+  .status{display:none}
+  .chat{min-height:calc(100vh - 100px)}
+}
+@media(max-width:600px){
+  .brand p{display:none}
+  .brand h1{font-size:17px}
+  .messages{padding:20px 12px}
+  .bubble{max-width:88%;font-size:13px}
+  .welcome h2{font-size:23px}
+  .suggestions button{font-size:11px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="header">
+  <div class="brand">
+    <div class="flag">🇵🇰</div>
+    <div>
+      <h1>PakAI</h1>
+      <p>Pakistan Knowledge Assistant</p>
+    </div>
+  </div>
+  <div class="status"><i></i> Pakistan Knowledge AI</div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="side-title">Search Pakistan</div>
+  <div class="search">
+    <input id="searchInput" placeholder="Search places, people, history...">
+    <button id="searchBtn">⌕</button>
+  </div>
+
+  <div class="side-title">Explore</div>
+  <div class="quick">
+    <button data-q="Pakistan ka overview">🇵🇰 Pakistan</button>
+    <button data-q="Pakistan ke provinces">🗺️ Provinces</button>
+    <button data-q="Pakistan ke major cities">🏙️ Cities</button>
+    <button data-q="Pakistan ki history">🏛️ History</button>
+    <button data-q="Pakistan ki wars">⚔️ Wars & Battles</button>
+    <button data-q="Pakistan ki politics">🏛️ Politics</button>
+    <button data-q="Pakistan ke famous people">👤 Famous People</button>
+    <button data-q="Pakistan ka food">🍛 Food</button>
+    <button data-q="Pakistan tourism">🏔️ Tourism</button>
+    <button data-q="Pakistan education">🎓 Education</button>
+    <button data-q="Pakistan defence">🛡️ Defence</button>
+    <button data-q="Pakistan sports">🏏 Sports</button>
+  </div>
+
+  <div class="info-box">
+    <strong>🇵🇰 PakAI Knowledge</strong>
+    <span>Ask about Pakistan in English, Urdu or Roman Urdu. PakAI tries to answer only what you ask.</span>
+  </div>
+</aside>
+
+<main class="main">
+<section class="chat">
+
+  <div class="chat-top">
+    <div class="chat-title">
+      <div class="ai-dot">🇵🇰</div>
+      <div>
+        <strong>PakAI</strong>
+        <small>Pakistan Knowledge Assistant</small>
+      </div>
+    </div>
+    <button class="clear" id="clearBtn">Clear Chat</button>
+  </div>
+
+  <div class="messages" id="messages">
+
+    <div class="welcome" id="welcome">
+      <div class="welcome-logo">🇵🇰</div>
+      <h2>Assalam-o-Alaikum 👋</h2>
+      <p>
+        Ask me about Pakistan — places, cities, people, history, wars,
+        politics, culture, food, tourism, education, geography and much more.
+      </p>
+
+      <div class="suggestions">
+        <button data-q="Pakistan ka capital kya hai?">Capital</button>
+        <button data-q="Lahore Fort kya hai?">Lahore Fort</button>
+        <button data-q="Pakistan ki wars">Wars</button>
+        <button data-q="Pakistan ki politics">Politics</button>
+        <button data-q="Pakistan ke famous log">People</button>
+        <button data-q="Hunza ke bare mein batao">Hunza</button>
+        <button data-q="Pakistan ke famous foods">Food</button>
+        <button data-q="Pakistan ke provinces">Provinces</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="composer">
+    <div class="input-wrap">
+      <button class="tool-btn" id="micBtn" title="Voice input">🎙️</button>
+      <textarea id="input" rows="1" placeholder="Ask anything about Pakistan..."></textarea>
+      <button class="send" id="sendBtn">➤</button>
+    </div>
+    <div class="composer-note">
+      PakAI • English • اردو • Roman Urdu • Current session only
+    </div>
+  </div>
+
+</section>
+</main>
+</div>
+</div>
+
+<script>
+/* =========================================================
+   PAKAI — LARGE LOCAL PAKISTAN KNOWLEDGE DATABASE
+   ========================================================= */
+
+const DB = [
+
+/* =========================
+   PAKISTAN OVERVIEW
+   ========================= */
+{
+name:"Pakistan",
+category:"Pakistan Overview",
+keywords:["pakistan","country","overview","about pakistan","پاکستان"],
+short:"Pakistan is a country in South Asia. Its capital is Islamabad.",
+details:
+"Pakistan is a South Asian country located at the crossroads of South Asia, Central Asia and the Middle East. It has four provinces: Punjab, Sindh, Khyber Pakhtunkhwa and Balochistan. Islamabad is the federal capital. Pakistan also includes the Islamabad Capital Territory and territories administered under Pakistan's constitutional and legal arrangements.",
+facts:[
+"Capital: Islamabad",
+"National language: Urdu",
+"Official language for government use: Urdu and English",
+"Currency: Pakistani Rupee",
+"Independence: 14 August 1947",
+"Federal republic",
+"Major geographic regions: plains, mountains, plateaus, deserts and coastline"
+]
+},
+
+{
+name:"Pakistan Independence",
+category:"Pakistan Studies",
+keywords:["independence","14 august","1947","azadi","independence day","pakistan independence","قیام پاکستان"],
+short:"Pakistan became independent on 14 August 1947.",
+details:
+"Pakistan emerged as an independent state in August 1947 during the partition of British India. Muhammad Ali Jinnah became the country's first Governor-General.",
+facts:[
+"Independence: 14 August 1947",
+"Founder associated with the creation of Pakistan: Muhammad Ali Jinnah",
+"First Governor-General: Muhammad Ali Jinnah",
+"First Prime Minister: Liaquat Ali Khan"
+]
+},
+
+{
+name:"Pakistan Geography",
+category:"Geography",
+keywords:["geography","land","rivers","mountains","desert","coast","geography pakistan"],
+short:"Pakistan has mountains, plains, plateaus, deserts, rivers and a coastline.",
+details:
+"Pakistan's geography ranges from the high mountains of the north to the Indus plains, western plateaus, deserts and the Arabian Sea coastline.",
+facts:[
+"Major river system: Indus River system",
+"Highest mountain associated with Pakistan: K2",
+"Major deserts: Thar, Cholistan, Thal and Kharan",
+"Coastline: Arabian Sea",
+"Major northern mountain ranges: Karakoram, Himalaya and Hindu Kush"
+]
+},
+
+/* =========================
+   PROVINCES
+   ========================= */
+{
+name:"Punjab",
+category:"Province",
+keywords:["punjab","province","پنجاب"],
+short:"Punjab is Pakistan's most populous province and is centered on the Indus plain.",
+details:
+"Punjab is located in eastern Pakistan. Lahore is its provincial capital. The province is known for agriculture, historic cities, Mughal heritage, rivers and major industrial and educational centers.",
+facts:[
+"Capital: Lahore",
+"Major cities: Lahore, Faisalabad, Rawalpindi, Multan, Gujranwala, Sialkot, Bahawalpur, Sargodha, Jhelum and Gujrat",
+"Major river system: Indus tributaries",
+"Important crops: wheat, rice, cotton and sugarcane"
+]
+},
+
+{
+name:"Sindh",
+category:"Province",
+keywords:["sindh","province","sind","سندھ"],
+short:"Sindh is a province in southeastern Pakistan. Karachi is its capital.",
+details:
+"Sindh lies along the lower Indus River and the Arabian Sea. It has major historical sites including Mohenjo-daro, Makli and Thatta.",
+facts:[
+"Capital: Karachi",
+"Major cities: Karachi, Hyderabad, Sukkur, Larkana, Thatta, Mirpur Khas and Nawabshah",
+"Major river: Indus",
+"Important heritage: Mohenjo-daro and Makli"
+]
+},
+
+{
+name:"Khyber Pakhtunkhwa",
+category:"Province",
+keywords:["kpk","kp","khyber pakhtunkhwa","nwfp","خیبر پختونخوا"],
+short:"Khyber Pakhtunkhwa is a mountainous province in northwestern Pakistan.",
+details:
+"Khyber Pakhtunkhwa is known for mountain landscapes, valleys, archaeological heritage and historic routes linking South Asia with Central Asia.",
+facts:[
+"Capital: Peshawar",
+"Major cities: Peshawar, Mardan, Abbottabad, Mingora, Kohat, Dera Ismail Khan and Chitral",
+"Famous areas: Swat, Chitral, Kaghan and Kumrat",
+"Historic site: Takht-i-Bahi"
+]
+},
+
+{
+name:"Balochistan",
+category:"Province",
+keywords:["balochistan","baloch","بلوچستان"],
+short:"Balochistan is Pakistan's largest province by area.",
+details:
+"Balochistan occupies the southwestern part of Pakistan. It has extensive mountains, plateaus, deserts and coastline and contains Gwadar and many archaeological and natural sites.",
+facts:[
+"Capital: Quetta",
+"Major cities: Quetta, Gwadar, Turbat, Khuzdar, Chaman, Sibi and Zhob",
+"Important natural areas: Hingol National Park and Kund Malir",
+"Coast: Arabian Sea"
+]
+},
+
+/* =========================
+   FEDERAL CAPITAL
+   ========================= */
+{
+name:"Islamabad",
+category:"City",
+keywords:["islamabad","capital","اسلام آباد"],
+short:"Islamabad is the capital city of Pakistan.",
+details:
+"Islamabad is Pakistan's federal capital, located near the Margalla Hills. It is known for planned urban development, government institutions, Faisal Mosque, Pakistan Monument and natural scenery.",
+facts:[
+"Capital of Pakistan",
+"Province/territory: Islamabad Capital Territory",
+"Famous site: Faisal Mosque",
+"Natural landmark: Margalla Hills",
+"National museum/monument area: Pakistan Monument"
+]
+},
+
+/* =========================
+   MAJOR CITIES
+   ========================= */
+{
+name:"Lahore",
+category:"City",
+keywords:["lahore","لاہور"],
+short:"Lahore is the capital of Punjab and one of Pakistan's major cultural and historical cities.",
+details:
+"Lahore has played an important role in the political, cultural, educational and artistic history of the region. Its major landmarks include Lahore Fort, Badshahi Mosque, Wazir Khan Mosque, Shalimar Gardens and Minar-e-Pakistan.",
+facts:[
+"Capital of Punjab",
+"Known as a major cultural center",
+"Historic Mughal landmarks",
+"Major educational center",
+"Famous food traditions"
+]
+},
+
+{
+name:"Karachi",
+category:"City",
+keywords:["karachi","کراچی"],
+short:"Karachi is Pakistan's largest city and a major economic and port center.",
+details:
+"Karachi is located on the Arabian Sea in Sindh. It is Pakistan's major financial, commercial and maritime center and contains Karachi Port and Port Qasim.",
+facts:[
+"Capital of Sindh",
+"Major seaport city",
+"Major commercial and financial center",
+"Jinnah Mausoleum is located here",
+"Arabian Sea coastline"
+]
+},
+
+{
+name:"Rawalpindi",
+category:"City",
+keywords:["rawalpindi","pindi","راولپنڈی"],
+short:"Rawalpindi is a major city of Punjab located beside Islamabad.",
+details:
+"Rawalpindi is an important administrative, commercial and military center. It is closely connected with Islamabad.",
+facts:[
+"Province: Punjab",
+"Adjacent to Islamabad",
+"Important commercial center",
+"Historic cantonment city"
+]
+},
+
+{
+name:"Peshawar",
+category:"City",
+keywords:["peshawar","پشاور"],
+short:"Peshawar is the capital of Khyber Pakhtunkhwa and one of South Asia's historic cities.",
+details:
+"Peshawar has a long history as a center of trade and cultural exchange between South Asia and Central Asia. The old city, Qissa Khwani Bazaar and Peshawar Museum are notable landmarks.",
+facts:[
+"Capital of Khyber Pakhtunkhwa",
+"Historic trade city",
+"Qissa Khwani Bazaar",
+"Peshawar Museum"
+]
+},
+
+{
+name:"Quetta",
+category:"City",
+keywords:["quetta","کوئٹہ"],
+short:"Quetta is the capital of Balochistan.",
+details:
+"Quetta is surrounded by mountains and serves as an important administrative and commercial center of Balochistan.",
+facts:[
+"Capital of Balochistan",
+"Mountainous setting",
+"Important regional trade center",
+"Known for fruit production"
+]
+},
+
+{
+name:"Multan",
+category:"City",
+keywords:["multan","ملتان"],
+short:"Multan is a historic city in southern Punjab, famous for shrines and traditional crafts.",
+details:
+"Multan has a long history and is widely associated with Sufi heritage. Its famous landmarks include the shrines of Shah Rukn-e-Alam and Bahauddin Zakariya.",
+facts:[
+"Province: Punjab",
+"Known as a major center of Sufi heritage",
+"Shrine of Shah Rukn-e-Alam",
+"Shrine of Bahauddin Zakariya",
+"Famous for mangoes and blue pottery"
+]
+},
+
+{
+name:"Faisalabad",
+category:"City",
+keywords:["faisalabad","lyallpur","فیصل آباد"],
+short:"Faisalabad is a major industrial and textile city in Punjab.",
+details:
+"Faisalabad developed as an important agricultural and industrial center. It is particularly associated with textile manufacturing.",
+facts:[
+"Province: Punjab",
+"Major textile center",
+"Historic name: Lyallpur",
+"Clock Tower is a famous landmark"
+]
+},
+
+{
+name:"Gujranwala",
+category:"City",
+keywords:["gujranwala","گوجرانوالہ"],
+short:"Gujranwala is a major industrial and commercial city of Punjab.",
+details:
+"Gujranwala is known for manufacturing, agriculture-related commerce and food traditions.",
+facts:[
+"Province: Punjab",
+"Major industrial center",
+"Known for food and wrestling traditions",
+"Important urban center of central Punjab"
+]
+},
+
+{
+name:"Sialkot",
+category:"City",
+keywords:["sialkot","سیالکوٹ"],
+short:"Sialkot is an important industrial and export city in northeastern Punjab.",
+details:
+"Sialkot is internationally known for sports goods, surgical instruments and leather products. It is also associated with Allama Muhammad Iqbal.",
+facts:[
+"Province: Punjab",
+"Sports goods industry",
+"Surgical instruments industry",
+"Birthplace of Allama Muhammad Iqbal"
+]
+},
+
+{
+name:"Jhelum",
+category:"City",
+keywords:["jhelum","جہلم"],
+short:"Jhelum is a historic city in northern Punjab on the Jhelum River.",
+details:
+"Jhelum is known for its association with the British-era military cantonment, the Jhelum River and nearby historic sites including Rohtas Fort.",
+facts:[
+"Province: Punjab",
+"Located on Jhelum River",
+"Near Rohtas Fort",
+"Important military history"
+]
+},
+
+{
+name:"Gujrat",
+category:"City",
+keywords:["gujrat","گجرات"],
+short:"Gujrat is a city in Punjab near the Chenab River.",
+details:
+"Gujrat has historical links to the wider Punjab region and is known for agriculture, manufacturing and proximity to historic sites.",
+facts:[
+"Province: Punjab",
+"Located near Chenab River",
+"Known for ceramics and furniture industries",
+"Important nearby historic area"
+]
+},
+
+{
+name:"Bahawalpur",
+category:"City",
+keywords:["bahawalpur","بہاولپور"],
+short:"Bahawalpur is a historic city in southern Punjab associated with the former Bahawalpur State.",
+details:
+"Bahawalpur is known for palaces, desert landscapes and the cultural heritage of the former princely state.",
+facts:[
+"Province: Punjab",
+"Noor Mahal",
+"Darawar/Derawar Fort is in the wider region",
+"Cholistan Desert nearby"
+]
+},
+
+{
+name:"Sargodha",
+category:"City",
+keywords:["sargodha","سرگودھا"],
+short:"Sargodha is a major agricultural city in Punjab, especially known for citrus production.",
+details:
+"Sargodha is an important agricultural and air-force-associated city. Its citrus orchards are especially well known.",
+facts:[
+"Province: Punjab",
+"Known for kinnow citrus",
+"Major agricultural region",
+"Sargodha Air Base"
+]
+},
+
+{
+name:"Abbottabad",
+category:"City",
+keywords:["abbottabad","ایبٹ آباد"],
+short:"Abbottabad is a hill city in Khyber Pakhtunkhwa.",
+details:
+"Abbottabad is known for its pleasant mountain environment, educational institutions and proximity to northern tourist areas.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Near Nathia Gali and Ayubia",
+"Hill environment",
+"Important educational center"
+]
+},
+
+{
+name:"Murree",
+category:"City",
+keywords:["murree","مری"],
+short:"Murree is a hill station in Punjab's Murree District.",
+details:
+"Murree is one of Pakistan's best-known hill resorts and is surrounded by forested hills.",
+facts:[
+"Province: Punjab",
+"Popular hill station",
+"Murree Mall Road",
+"Patriata/New Murree nearby",
+"Cooler climate than surrounding plains"
+]
+},
+
+{
+name:"Taxila",
+category:"City",
+keywords:["taxila","taxila city","ٹیکسلا"],
+short:"Taxila is an ancient city and archaeological region near Islamabad and Rawalpindi.",
+details:
+"Taxila was an important center of ancient learning, trade and Gandhara civilization. The archaeological remains include ancient settlements, monasteries and the Taxila Museum.",
+facts:[
+"Province: Punjab",
+"Ancient Gandhara center",
+"Taxila Museum",
+"UNESCO World Heritage archaeological sites"
+]
+},
+
+{
+name:"Gilgit",
+category:"City",
+keywords:["gilgit","گلگت"],
+short:"Gilgit is the capital of Gilgit-Baltistan and an important gateway to northern Pakistan.",
+details:
+"Gilgit lies in a mountainous region surrounded by major valleys and routes leading toward Hunza, Skardu and other northern areas.",
+facts:[
+"Region: Gilgit-Baltistan",
+"Major northern administrative center",
+"Gateway to mountain tourism",
+"Gilgit River area"
+]
+},
+
+{
+name:"Hunza",
+category:"Valley",
+keywords:["hunza","hunza valley","ہنزہ"],
+short:"Hunza is a famous mountain valley in Gilgit-Baltistan.",
+details:
+"Hunza is known for dramatic mountain scenery, traditional settlements, forts and alpine landscapes.",
+facts:[
+"Region: Gilgit-Baltistan",
+"Famous peaks include Rakaposhi and Ultar region",
+"Baltit Fort",
+"Altit Fort",
+"Attabad Lake nearby"
+]
+},
+
+{
+name:"Skardu",
+category:"City",
+keywords:["skardu","سکردو"],
+short:"Skardu is a major tourism center in Gilgit-Baltistan.",
+details:
+"Skardu is surrounded by high mountains and is a gateway to several famous trekking and mountaineering routes.",
+facts:[
+"Region: Gilgit-Baltistan",
+"Gateway toward K2 region",
+"Shigar Fort nearby",
+"Deosai Plains nearby",
+"Satpara Lake"
+]
+},
+
+{
+name:"Mardan",
+category:"City",
+keywords:["mardan","مردان"],
+short:"Mardan is a major city of Khyber Pakhtunkhwa near important Gandhara archaeological sites.",
+details:
+"Mardan is an important agricultural and educational center and is close to Takht-i-Bahi.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Near Takht-i-Bahi",
+"Important agricultural area",
+"Historic Gandhara region"
+]
+},
+
+{
+name:"Swat",
+category:"Valley",
+keywords:["swat","swat valley","سوات"],
+short:"Swat is a mountainous valley in Khyber Pakhtunkhwa known for rivers, forests and tourism.",
+details:
+"Swat contains mountain scenery, rivers, forests, archaeological sites and tourist towns including Mingora and Saidu Sharif.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Mingora is a major city",
+"Saidu Sharif",
+"Swat River",
+"Malakand and Kalam region nearby"
+]
+},
+
+{
+name:"Chitral",
+category:"District/Region",
+keywords:["chitral","چترال"],
+short:"Chitral is a mountainous region in northern Khyber Pakhtunkhwa.",
+details:
+"Chitral is known for high mountains, the Chitral River, Kalash communities and access toward the Hindu Kush.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Chitral River",
+"Kalash valleys nearby",
+"Shandur Pass"
+]
+},
+
+{
+name:"Hyderabad",
+category:"City",
+keywords:["hyderabad sindh","hyderabad","حیدرآباد"],
+short:"Hyderabad is a major city in Sindh.",
+details:
+"Hyderabad is an important cultural, commercial and educational center of Sindh.",
+facts:[
+"Province: Sindh",
+"Near Indus River",
+"Known for handicrafts and glass bangles",
+"Historic bazaars"
+]
+},
+
+{
+name:"Sukkur",
+category:"City",
+keywords:["sukkur","سکھر"],
+short:"Sukkur is a major city on the Indus River in Sindh.",
+details:
+"Sukkur is an important transport, agricultural and commercial center. Sukkur Barrage is a major irrigation structure.",
+facts:[
+"Province: Sindh",
+"Indus River",
+"Sukkur Barrage",
+"Lansdowne Bridge"
+]
+},
+
+{
+name:"Thatta",
+category:"City/Heritage",
+keywords:["thatta","ٹھٹھہ"],
+short:"Thatta is a historic city in Sindh known for monuments and heritage sites.",
+details:
+"Thatta was an important historic center and contains major heritage sites including the Shah Jahan Mosque.",
+facts:[
+"Province: Sindh",
+"Shah Jahan Mosque",
+"Makli Necropolis nearby",
+"Historic Sindh capital region"
+]
+},
+
+{
+name:"Larkana",
+category:"City",
+keywords:["larkana","لاڑکانہ"],
+short:"Larkana is a major city in Sindh near the archaeological site of Mohenjo-daro.",
+details:
+"Larkana is an important agricultural and administrative center and is closely associated with the archaeological heritage of Mohenjo-daro.",
+facts:[
+"Province: Sindh",
+"Near Mohenjo-daro",
+"Indus Valley heritage region",
+"Agricultural center"
+]
+},
+
+{
+name:"Gwadar",
+category:"City/Port",
+keywords:["gwadar","گوادر","port gwadar"],
+short:"Gwadar is a coastal city and deep-sea port in Balochistan.",
+details:
+"Gwadar is located on the Arabian Sea and is important for maritime trade and regional connectivity.",
+facts:[
+"Province: Balochistan",
+"Arabian Sea",
+"Gwadar Port",
+"Natural coastal landscape"
+]
+},
+
+{
+name:"Khuzdar",
+category:"City",
+keywords:["khuzdar","خضدار"],
+short:"Khuzdar is an important city in central Balochistan.",
+details:
+"Khuzdar is a regional administrative and commercial center surrounded by rugged mountain terrain.",
+facts:[
+"Province: Balochistan",
+"Mountainous setting",
+"Regional commercial center"
+]
+},
+
+/* =========================
+   HISTORICAL PLACES
+   ========================= */
+{
+name:"Lahore Fort",
+category:"Historical Place",
+keywords:["lahore fort","shahi qila","lahore qila","شاہی قلعہ","قلعہ لاہور"],
+short:"Lahore Fort is a historic Mughal-era fort in Lahore.",
+details:
+"Lahore Fort is one of Lahore's most important monuments. It contains palaces, courtyards, gardens, halls and decorative Mughal architecture. It forms part of the Lahore Fort and Shalimar Gardens UNESCO World Heritage property.",
+facts:[
+"Location: Lahore, Punjab",
+"Mughal heritage",
+"UNESCO World Heritage Site",
+"Notable features: Sheesh Mahal, Naulakha Pavilion and Diwan-i-Khas"
+]
+},
+
+{
+name:"Badshahi Mosque",
+category:"Historical Place",
+keywords:["badshahi mosque","badshahi masjid","بادشاہی مسجد"],
+short:"Badshahi Mosque is a major Mughal-era mosque in Lahore.",
+details:
+"Badshahi Mosque was commissioned during the reign of Mughal emperor Aurangzeb. It stands opposite Lahore Fort and is one of Lahore's most recognizable landmarks.",
+facts:[
+"Location: Lahore",
+"Commissioned by Aurangzeb",
+"Mughal architecture",
+"Adjacent to Lahore Fort"
+]
+},
+
+{
+name:"Shalimar Gardens",
+category:"Historical Place",
+keywords:["shalimar gardens","shalimar bagh","شالامار باغ"],
+short:"Shalimar Gardens are historic Mughal gardens in Lahore.",
+details:
+"The gardens were created during the reign of Shah Jahan and are known for terraces, water channels, fountains and Mughal garden design.",
+facts:[
+"Location: Lahore",
+"Built during Shah Jahan's reign",
+"Mughal garden architecture",
+"UNESCO World Heritage property"
+]
+},
+
+{
+name:"Wazir Khan Mosque",
+category:"Historical Place",
+keywords:["wazir khan mosque","wazir khan masjid","وزیر خان مسجد"],
+short:"Wazir Khan Mosque is a famous Mughal mosque in Lahore's old city.",
+details:
+"The mosque is particularly known for colorful tile work, frescoes and traditional Mughal architectural decoration.",
+facts:[
+"Location: Lahore",
+"Mughal period",
+"Famous for tile mosaics",
+"Located near Delhi Gate"
+]
+},
+
+{
+name:"Minar-e-Pakistan",
+category:"National Monument",
+keywords:["minar e pakistan","minar-e-pakistan","مینار پاکستان"],
+short:"Minar-e-Pakistan is a national monument in Lahore's Greater Iqbal Park.",
+details:
+"The monument commemorates the Lahore Resolution of 23 March 1940, associated with the political movement that led to the creation of Pakistan.",
+facts:[
+"Location: Lahore",
+"Greater Iqbal Park",
+"Associated with Lahore Resolution",
+"Major national landmark"
+]
+},
+
+{
+name:"Rohtas Fort",
+category:"Historical Place",
+keywords:["rohtas fort","qila rohtas","rohtas","قلعہ روہتاس"],
+short:"Rohtas Fort is a major 16th-century fort near Jhelum.",
+details:
+"Rohtas Fort was built by Sher Shah Suri as a major defensive stronghold. It is known for massive walls, gates and strategic architecture.",
+facts:[
+"Location: near Jhelum, Punjab",
+"Associated with Sher Shah Suri",
+"Built in the 16th century",
+"UNESCO World Heritage Site"
+]
+},
+
+{
+name:"Taxila Archaeological Sites",
+category:"Ancient Civilization",
+keywords:["taxila archaeology","taxila ruins","gandhara taxila"],
+short:"Taxila contains major archaeological remains of ancient Gandhara.",
+details:
+"Taxila includes ancient cities, monasteries, stupas and other archaeological remains representing several historical periods.",
+facts:[
+"Location: Punjab",
+"Gandhara civilization",
+"Important ancient learning center",
+"UNESCO World Heritage Site"
+]
+},
+
+{
+name:"Mohenjo-daro",
+category:"Ancient Civilization",
+keywords:["mohenjo daro","mohenjodaro","موئن جو دڑو"],
+short:"Mohenjo-daro is one of the major archaeological sites of the Indus Valley Civilization.",
+details:
+"Mohenjo-daro flourished during the Bronze Age and is known for planned streets, drainage systems, buildings and archaeological remains.",
+facts:[
+"Location: Sindh",
+"Indus Valley Civilization",
+"Bronze Age archaeological site",
+"UNESCO World Heritage Site"
+]
+},
+
+{
+name:"Harappa",
+category:"Ancient Civilization",
+keywords:["harappa","ہڑپہ"],
+short:"Harappa is a major archaeological site of the Indus Valley Civilization.",
+details:
+"Harappa was an important urban settlement of the Indus Valley Civilization. Archaeological remains show organized urban planning, craft production and trade.",
+facts:[
+"Location: Punjab",
+"Near Sahiwal",
+"Indus Valley Civilization",
+"Type site for the Harappan civilization"
+]
+},
+
+{
+name:"Makli Necropolis",
+category:"Historical Place",
+keywords:["makli","makli necropolis","مکلی"],
+short:"Makli Necropolis is one of the world's largest historical funerary sites.",
+details:
+"Makli contains thousands of tombs and monuments representing centuries of Sindhi Islamic architecture and regional history.",
+facts:[
+"Location: Thatta, Sindh",
+"Large historic necropolis",
+"Famous tomb architecture",
+"UNESCO World Heritage Site"
+]
+},
+
+{
+name:"Ranikot Fort",
+category:"Historical Place",
+keywords:["ranikot","ranikot fort","rani kot","رنی کوٹ"],
+short:"Ranikot Fort is a massive historic fortification in Sindh.",
+details:
+"Ranikot is known for its extensive walls stretching through rugged terrain in the Kirthar region.",
+facts:[
+"Location: Sindh",
+"Kirthar mountain region",
+"Extensive fortification",
+"Known as the Great Wall of Sindh"
+]
+},
+
+{
+name:"Derawar Fort",
+category:"Historical Place",
+keywords:["derawar fort","dera war fort","قلعہ دراوڑ"],
+short:"Derawar Fort is a massive square fort in the Cholistan Desert.",
+details:
+"Derawar Fort is recognized by its large circular bastions and desert setting. It is associated with the history of the Bahawalpur region.",
+facts:[
+"Location: Cholistan Desert, Punjab",
+"Near Bahawalpur",
+"Large square fort",
+"Distinctive massive bastions"
+]
+},
+
+{
+name:"Noor Mahal",
+category:"Historical Place",
+keywords:["noor mahal","نور محل"],
+short:"Noor Mahal is a historic palace in Bahawalpur.",
+details:
+"Noor Mahal is a palace associated with the former Bahawalpur State and is known for its European-influenced architecture.",
+facts:[
+"Location: Bahawalpur",
+"Former Bahawalpur State",
+"Palace architecture",
+"Major heritage attraction"
+]
+},
+
+{
+name:"Katas Raj Temples",
+category:"Religious Heritage",
+keywords:["katas raj","katas raj temples","کٹاس راج"],
+short:"Katas Raj Temples are a historic Hindu temple complex in Punjab.",
+details:
+"The complex includes several temples and a sacred pond and is an important religious and archaeological heritage site.",
+facts:[
+"Location: Chakwal District, Punjab",
+"Hindu heritage",
+"Sacred pond",
+"Historic temple complex"
+]
+},
+
+{
+name:"Faisal Mosque",
+category:"Religious Heritage",
+keywords:["faisal mosque","faisal masjid","فیصل مسجد"],
+short:"Faisal Mosque is a major mosque in Islamabad at the foot of the Margalla Hills.",
+details:
+"Faisal Mosque is one of Pakistan's most recognizable modern Islamic architectural landmarks. Its design has a tent-like form with large minarets.",
+facts:[
+"Location: Islamabad",
+"At the foot of Margalla Hills",
+"Major modern Islamic landmark",
+"Named after King Faisal of Saudi Arabia"
+]
+},
+
+{
+name:"Pakistan Monument",
+category:"National Monument",
+keywords:["pakistan monument","pakistan monument islamabad","پاکستان مونومنٹ"],
+short:"Pakistan Monument is a national monument in Islamabad.",
+details:
+"The monument represents the unity of Pakistan's people and provinces and is located on the Shakarparian Hills.",
+facts:[
+"Location: Islamabad",
+"Shakarparian",
+"National monument",
+"Petal-shaped architectural design"
+]
+},
+
+{
+name:"Baltit Fort",
+category:"Historical Place",
+keywords:["baltit fort","altit baltit","بلتت قلعہ"],
+short:"Baltit Fort is a historic fort in Hunza.",
+details:
+"Baltit Fort overlooks the Hunza Valley and represents the architectural heritage of the former Hunza state.",
+facts:[
+"Location: Karimabad, Hunza",
+"Gilgit-Baltistan",
+"Historic Hunza state",
+"Mountain valley landmark"
+]
+},
+
+{
+name:"Altit Fort",
+category:"Historical Place",
+keywords:["altit fort","altit","التت قلعہ"],
+short:"Altit Fort is a historic fort in the Hunza Valley.",
+details:
+"Altit Fort is one of the oldest surviving structures in the Hunza region and overlooks the Hunza River valley.",
+facts:[
+"Location: Altit, Hunza",
+"Gilgit-Baltistan",
+"Historic fortified settlement",
+"Traditional Hunza architecture"
+]
+},
+
+{
+name:"Shigar Fort",
+category:"Historical Place",
+keywords:["shigar fort","shigar","شگر قلعہ"],
+short:"Shigar Fort is a historic palace-fort near Skardu.",
+details:
+"Shigar Fort is an example of traditional Balti architecture and is located in the Shigar Valley.",
+facts:[
+"Location: Shigar, Gilgit-Baltistan",
+"Balti heritage",
+"Historic palace-fort",
+"Near Skardu"
+]
+},
+
+{
+name:"Khaplu Palace",
+category:"Historical Place",
+keywords:["khaplu palace","khaplu","خپلو محل"],
+short:"Khaplu Palace is a historic palace in the Khaplu Valley of Gilgit-Baltistan.",
+details:
+"Khaplu Palace reflects the architectural and cultural heritage of the former Khaplu rulers.",
+facts:[
+"Location: Khaplu",
+"Gilgit-Baltistan",
+"Balti heritage",
+"Historic palace"
+]
+},
+
+{
+name:"Takht-i-Bahi",
+category:"Ancient Civilization",
+keywords:["takht i bahi","takht-i-bahi","تخت بائی"],
+short:"Takht-i-Bahi is an ancient Buddhist monastic complex in Khyber Pakhtunkhwa.",
+details:
+"Takht-i-Bahi is a major Gandhara archaeological site with monastic remains built on hills.",
+facts:[
+"Location: Mardan District",
+"Gandhara Buddhist heritage",
+"Ancient monastery",
+"UNESCO World Heritage Site"
+]
+},
+
+/* =========================
+   NATURAL PLACES
+   ========================= */
+{
+name:"Hingol National Park",
+category:"National Park",
+keywords:["hingol","hingol national park","ہنگول"],
+short:"Hingol National Park is a large protected area in Balochistan.",
+details:
+"Hingol is known for rugged mountains, desert landscapes, coastal scenery, wildlife and distinctive rock formations.",
+facts:[
+"Location: Balochistan",
+"Arabian Sea coast nearby",
+"Large protected area",
+"Princess of Hope and Hingol River region"
+]
+},
+
+{
+name:"Kund Malir",
+category:"Beach",
+keywords:["kund malir","kundmalir","کنڈ ملیر"],
+short:"Kund Malir is a scenic coastal area in Balochistan.",
+details:
+"Kund Malir lies along the Makran Coastal Highway and is known for its beach, mountains and desert-coast landscape.",
+facts:[
+"Province: Balochistan",
+"Makran Coastal Highway",
+"Arabian Sea",
+"Near Hingol National Park"
+]
+},
+
+{
+name:"Deosai Plains",
+category:"Natural Place",
+keywords:["deosai","deosai plains","دیوسائی"],
+short:"Deosai is a high-altitude plateau in Gilgit-Baltistan.",
+details:
+"Deosai is famous for vast alpine landscapes and is associated with the Himalayan brown bear conservation area.",
+facts:[
+"Region: Gilgit-Baltistan",
+"High-altitude plateau",
+"Deosai National Park",
+"Himalayan brown bear habitat"
+]
+},
+
+{
+name:"Attabad Lake",
+category:"Lake",
+keywords:["attabad lake","attabad","عطا آباد جھیل"],
+short:"Attabad Lake is a turquoise lake in Hunza formed after a major landslide in 2010.",
+details:
+"The lake formed when a landslide blocked the Hunza River in January 2010. It is now a major tourism attraction.",
+facts:[
+"Location: Hunza",
+"Gilgit-Baltistan",
+"Formed in 2010",
+"Known for blue-green water"
+]
+},
+
+{
+name:"Lake Saif-ul-Malook",
+category:"Lake",
+keywords:["saif ul malook","saiful mulook","سیف الملوک"],
+short:"Lake Saif-ul-Malook is a famous alpine lake near Naran in Khyber Pakhtunkhwa.",
+details:
+"The lake is surrounded by high mountains and is one of the best-known natural tourist attractions of the Kaghan Valley.",
+facts:[
+"Location: near Naran",
+"Kaghan Valley",
+"Khyber Pakhtunkhwa",
+"High-altitude alpine lake"
+]
+},
+
+{
+name:"Naran",
+category:"Tourism",
+keywords:["naran","ناران"],
+short:"Naran is a popular mountain tourism town in the Kaghan Valley.",
+details:
+"Naran is a major base for exploring the Kaghan Valley and nearby attractions including Lake Saif-ul-Malook and Babusar Pass.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Kaghan Valley",
+"Tourism center",
+"Near Saif-ul-Malook"
+]
+},
+
+{
+name:"Kaghan Valley",
+category:"Valley",
+keywords:["kaghan","kaghan valley","کاغان"],
+short:"Kaghan Valley is a mountain valley in Khyber Pakhtunkhwa.",
+details:
+"Kaghan is known for rivers, forests, alpine lakes and mountain passes. Naran is one of its best-known tourist towns.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Naran",
+"Saif-ul-Malook",
+"Babusar Pass",
+"Kaghan River"
+]
+},
+
+/* =========================
+   FOOD
+   ========================= */
+{
+name:"Biryani",
+category:"Pakistani Food",
+keywords:["biryani","بریانی"],
+short:"Biryani is a popular South Asian rice dish widely eaten in Pakistan.",
+details:
+"Pakistani biryani commonly combines rice with meat or chicken, spices and aromatic ingredients. Karachi is particularly famous for its biryani traditions.",
+facts:[
+"Popular in Pakistan",
+"Common versions: chicken, beef and mutton",
+"Karachi is famous for biryani"
+]
+},
+
+{
+name:"Nihari",
+category:"Pakistani Food",
+keywords:["nihari","نہاری"],
+short:"Nihari is a slow-cooked meat stew traditionally eaten as a breakfast or hearty meal.",
+details:
+"Nihari is prepared by slowly cooking meat with spices and a rich broth. It is commonly served with naan.",
+facts:[
+"Slow-cooked meat dish",
+"Commonly served with naan",
+"Popular across Pakistan"
+]
+},
+
+{
+name:"Haleem",
+category:"Pakistani Food",
+keywords:["haleem","حلیم"],
+short:"Haleem is a thick dish made from grains, lentils, meat and spices.",
+details:
+"Haleem combines wheat or other grains, lentils, meat and spices into a slow-cooked dish.",
+facts:[
+"Contains grains and lentils",
+"Often made with beef or chicken",
+"Popular during Ramadan"
+]
+},
+
+{
+name:"Karahi",
+category:"Pakistani Food",
+keywords:["karahi","chicken karahi","mutton karahi","کڑاہی"],
+short:"Karahi is a popular Pakistani meat dish cooked with tomatoes, spices and other ingredients in a karahi wok.",
+details:
+"Chicken karahi and mutton karahi are common varieties. The dish is widely served in restaurants and homes.",
+facts:[
+"Common varieties: chicken and mutton",
+"Usually cooked in a karahi",
+"Often served with naan or roti"
+]
+},
+
+{
+name:"Chapli Kebab",
+category:"Pakistani Food",
+keywords:["chapli kebab","chapli kabab","چپلی کباب"],
+short:"Chapli kebab is a famous minced-meat kebab associated strongly with Khyber Pakhtunkhwa.",
+details:
+"Chapli kebab is generally made from minced meat mixed with spices, herbs and other ingredients and shaped into a flat patty.",
+facts:[
+"Strong association with Khyber Pakhtunkhwa",
+"Usually made with minced meat",
+"Often served with naan and chutney"
+]
+},
+
+{
+name:"Sajji",
+category:"Pakistani Food",
+keywords:["sajji","سجی"],
+short:"Sajji is a traditional Balochi-style roasted meat dish.",
+details:
+"Sajji is traditionally prepared by roasting a whole or large portion of meat with relatively simple seasoning.",
+facts:[
+"Associated with Balochistan",
+"Traditional roasted meat",
+"Often served with rice"
+]
+},
+
+{
+name:"Saag",
+category:"Pakistani Food",
+keywords:["saag","sarson ka saag","ساگ"],
+short:"Saag is a traditional leafy-green dish widely associated with Punjab.",
+details:
+"Mustard greens and other leafy vegetables can be cooked into saag and commonly served with makki ki roti.",
+facts:[
+"Popular in Punjab",
+"Often made from mustard greens",
+"Served with makki ki roti"
+]
+},
+
+{
+name:"Halwa Puri",
+category:"Pakistani Food",
+keywords:["halwa puri","حلوہ پوری"],
+short:"Halwa puri is a popular Pakistani breakfast combination.",
+details:
+"The meal commonly includes fried puri, sweet halwa and chickpea curry.",
+facts:[
+"Popular breakfast",
+"Includes puri and halwa",
+"Often served with chana"
+]
+},
+
+{
+name:"Samosa",
+category:"Pakistani Food",
+keywords:["samosa","سموسہ"],
+short:"Samosa is a fried or baked pastry filled with savory ingredients.",
+details:
+"Pakistani samosas commonly contain spiced potatoes, peas or minced meat and are served with chutney.",
+facts:[
+"Common fillings: potato, peas or meat",
+"Usually served with chutney",
+"Popular snack"
+]
+},
+
+{
+name:"Gulab Jamun",
+category:"Pakistani Food",
+keywords:["gulab jamun","گلاب جامن"],
+short:"Gulab jamun is a popular South Asian milk-solid dessert soaked in sweet syrup.",
+details:
+"It is commonly served warm or at room temperature and is popular at celebrations.",
+facts:[
+"Sweet dessert",
+"Served at celebrations",
+"Made from milk solids or similar dough"
+]
+},
+
+/* =========================
+   CULTURE
+   ========================= */
+{
+name:"Pakistani Culture",
+category:"Culture",
+keywords:["culture","pakistani culture","ثقافت","pakistan culture"],
+short:"Pakistan has diverse regional cultures shaped by South Asian, Central Asian, Persian, Islamic and local traditions.",
+details:
+"Pakistani culture varies significantly between Punjab, Sindh, Khyber Pakhtunkhwa, Balochistan, Gilgit-Baltistan, Kashmir and urban communities.",
+facts:[
+"Major regional traditions: Punjabi, Sindhi, Pashtun, Baloch, Saraiki, Kashmiri, Balti, Shina and others",
+"Major celebrations include Eid festivals and regional cultural events",
+"Traditional crafts vary by region"
+]
+},
+
+{
+name:"Languages of Pakistan",
+category:"Languages",
+keywords:["languages","language","urdu","punjabi","sindhi","pashto","balochi","languages pakistan","زبانیں"],
+short:"Pakistan is multilingual, with Urdu as the national language and English widely used in official and educational contexts.",
+details:
+"Major Pakistani languages include Punjabi, Sindhi, Pashto, Balochi, Saraiki, Hindko, Brahui, Kashmiri, Shina, Balti, Burushaski and others.",
+facts:[
+"National language: Urdu",
+"Official and higher-education use: English",
+"Major regional languages include Punjabi, Sindhi, Pashto and Balochi"
+]
+},
+
+{
+name:"Traditional Clothing",
+category:"Culture",
+keywords:["clothes","clothing","dress","shalwar kameez","ajrak","traditional dress","لباس"],
+short:"Shalwar kameez is one of the best-known traditional clothing styles in Pakistan.",
+details:
+"Traditional clothing varies by region. Examples include Punjabi, Sindhi, Pashtun, Balochi and northern regional dress.",
+facts:[
+"Common national dress: Shalwar kameez",
+"Sindh: Ajrak and Sindhi cap",
+"Punjab: Punjabi traditional styles",
+"Pashtun regions: Pashtun clothing traditions",
+"Baloch regions: distinctive embroidered clothing"
+]
+},
+
+/* =========================
+   SPORTS
+   ========================= */
+{
+name:"Cricket in Pakistan",
+category:"Sports",
+keywords:["cricket","pakistan cricket","پی سی بی","کرکٹ"],
+short:"Cricket is one of Pakistan's most popular sports.",
+details:
+"Pakistan has a long cricket tradition and is represented internationally by the Pakistan national cricket team. Domestic cricket is organized through national competitions and the Pakistan Cricket Board.",
+facts:[
+"National governing body: Pakistan Cricket Board",
+"Major formats: Test, ODI and T20",
+"Pakistan won the 1992 Cricket World Cup",
+"Pakistan won the 2009 ICC World Twenty20"
+]
+},
+
+{
+name:"Hockey in Pakistan",
+category:"Sports",
+keywords:["hockey","pakistan hockey","ہاکی"],
+short:"Field hockey has historically been one of Pakistan's major sports.",
+details:
+"Pakistan has a strong historical record in international field hockey and has won multiple Olympic and World Cup titles.",
+facts:[
+"Three Olympic gold medals in men's field hockey",
+"Multiple World Cup titles",
+"Pakistan Hockey Federation governs the sport nationally"
+]
+},
+
+/* =========================
+   EDUCATION
+   ========================= */
+{
+name:"Education in Pakistan",
+category:"Education",
+keywords:["education","schools","universities","education pakistan","تعلیم"],
+short:"Pakistan has public and private schools, colleges and universities across its provinces and territories.",
+details:
+"Pakistan's education system includes primary, middle, secondary, higher secondary and higher education. Universities operate under federal or provincial regulatory arrangements.",
+facts:[
+"Major university cities include Islamabad, Lahore, Karachi, Peshawar and Faisalabad",
+"Education includes public and private institutions",
+"Pakistan has universities specializing in medicine, engineering, sciences, arts and social sciences"
+]
+},
+
+{
+name:"Quaid-i-Azam University",
+category:"Education",
+keywords:["quaid azam university","qau","اسلام آباد یونیورسٹی"],
+short:"Quaid-i-Azam University is a major public research university in Islamabad.",
+details:
+"The university is known for research and teaching in natural sciences, social sciences and related disciplines.",
+facts:[
+"Location: Islamabad",
+"Public research university",
+"Named after Muhammad Ali Jinnah"
+]
+},
+
+{
+name:"LUMS",
+category:"Education",
+keywords:["lums","lahore university management sciences"],
+short:"LUMS is a private university in Lahore known for management, social sciences, law, science and engineering education.",
+details:
+"LUMS offers undergraduate and graduate programs across several academic schools.",
+facts:[
+"Location: Lahore",
+"Private university",
+"Major academic areas include management, law, sciences and social sciences"
+]
+},
+
+/* =========================
+   SCIENCE & TECHNOLOGY
+   ========================= */
+{
+name:"SUPARCO",
+category:"Science & Technology",
+keywords:["suparco","space","space agency pakistan","سپارکو"],
+short:"SUPARCO is Pakistan's national space agency.",
+details:
+"The Pakistan Space and Upper Atmosphere Research Commission works in space science, satellite technology, remote sensing and related areas.",
+facts:[
+"Full name: Pakistan Space and Upper Atmosphere Research Commission",
+"Established in 1961",
+"Works in space and satellite-related research"
+]
+},
+
+{
+name:"Pakistan Atomic Energy Commission",
+category:"Science & Technology",
+keywords:["paec","atomic energy","nuclear pakistan","پاکستان اٹامک انرجی"],
+short:"PAEC is Pakistan's national organization involved in peaceful nuclear technology and related scientific activities.",
+details:
+"The Pakistan Atomic Energy Commission works in nuclear science, energy, agriculture, medicine and other peaceful applications.",
+facts:[
+"Full name: Pakistan Atomic Energy Commission",
+"Established in 1956",
+"Activities include nuclear power and peaceful applications"
+]
+},
+
+/* =========================
+   TRANSPORT
+   ========================= */
+{
+name:"Pakistan International Airlines",
+category:"Aviation",
+keywords:["pia","pakistan international airlines","airline","پی آئی اے"],
+short:"Pakistan International Airlines is Pakistan's flag carrier airline.",
+details:
+"Pakistan International Airlines, commonly known as PIA, is the country's national flag carrier and has operated domestic and international routes.",
+facts:[
+"Common name: PIA",
+"National flag carrier",
+"Headquarters: Karachi",
+"Operates domestic and international services"
+]
+},
+
+{
+name:"Pakistan Railways",
+category:"Transport",
+keywords:["railway","railways","pakistan railways","train","پاکستان ریلوے"],
+short:"Pakistan Railways is the national railway system of Pakistan.",
+details:
+"Pakistan Railways operates passenger and freight rail services connecting major cities and regions.",
+facts:[
+"National railway system",
+"Passenger and freight services",
+"Major routes connect Karachi, Lahore, Rawalpindi, Peshawar, Quetta and other cities"
+]
+},
+
+/* =========================
+   DEFENCE
+   ========================= */
+{
+name:"Pakistan Armed Forces",
+category:"Defence",
+keywords:["army","navy","air force","armed forces","pakistan army","pakistan navy","paf","افواج پاکستان"],
+short:"Pakistan's armed forces consist of the Pakistan Army, Pakistan Navy and Pakistan Air Force.",
+details:
+"The armed forces are responsible for the country's military defence. Pakistan also has paramilitary and other security organizations operating under different legal and administrative structures.",
+facts:[
+"Pakistan Army",
+"Pakistan Navy",
+"Pakistan Air Force",
+"Joint coordination through national defence institutions"
+]
+},
+
+{
+name:"Pakistan Army",
+category:"Defence",
+keywords:["pakistan army","army","پاک فوج"],
+short:"Pakistan Army is the land warfare branch of Pakistan's armed forces.",
+details:
+"The Pakistan Army is responsible primarily for land-based military defence and related national security duties assigned under law.",
+facts:[
+"Land warfare branch",
+"Headquarters: Rawalpindi",
+"Major formation structure includes corps and divisions"
+]
+},
+
+{
+name:"Pakistan Navy",
+category:"Defence",
+keywords:["pakistan navy","navy","پاک بحریہ"],
+short:"Pakistan Navy is the maritime branch of Pakistan's armed forces.",
+details:
+"The Pakistan Navy is responsible for maritime defence and protection of Pakistan's maritime interests.",
+facts:[
+"Maritime warfare branch",
+"Headquarters: Islamabad",
+"Major naval bases include Karachi and Ormara"
+]
+},
+
+{
+name:"Pakistan Air Force",
+category:"Defence",
+keywords:["pakistan air force","paf","air force","پاک فضائیہ"],
+short:"Pakistan Air Force is the aerial warfare branch of Pakistan's armed forces.",
+details:
+"Pakistan Air Force is responsible for aerial defence and air operations assigned under national defence structures.",
+facts:[
+"Air warfare branch",
+"Headquarters: Islamabad",
+"Operates fighter, transport, training and support aircraft"
+]
+},
+
+/* =========================
+   POLITICS
+   ========================= */
+{
+name:"Politics of Pakistan",
+category:"Politics",
+keywords:["politics","pakistan politics","political system","حکومت","سیاست"],
+short:"Pakistan is a federal parliamentary republic with elected national and provincial institutions.",
+details:
+"Pakistan's political system operates under the Constitution. The federal legislature is Parliament, consisting of the National Assembly and Senate. Provinces have provincial assemblies and governments.",
+facts:[
+"Constitutional framework: Constitution of 1973",
+"Parliament: National Assembly and Senate",
+"Head of state: President",
+"Head of government: Prime Minister",
+"Provincial governments are headed by Chief Ministers"
+]
+},
+
+{
+name:"Constitution of Pakistan",
+category:"Pakistan Studies",
+keywords:["constitution","1973 constitution","aain","آئین پاکستان","1973"],
+short:"The Constitution of Pakistan was adopted in 1973.",
+details:
+"The Constitution establishes the structure of the state, institutions, rights, responsibilities and relationship between federal and provincial governments.",
+facts:[
+"Adopted: 1973",
+"Defines federal and provincial institutions",
+"Provides fundamental rights",
+"Establishes Parliament and constitutional offices"
+]
+},
+
+{
+name:"National Assembly of Pakistan",
+category:"Politics",
+keywords:["national assembly","assembly","قومی اسمبلی"],
+short:"The National Assembly is the lower house of Pakistan's Parliament.",
+details:
+"The National Assembly is an elected legislative chamber and plays a central role in federal lawmaking, budget approval and parliamentary accountability.",
+facts:[
+"Lower house of Parliament",
+"Elected representatives",
+"Prime Minister is elected by the National Assembly"
+]
+},
+
+{
+name:"Senate of Pakistan",
+category:"Politics",
+keywords:["senate","senate pakistan","سینیٹ"],
+short:"The Senate is the upper house of Pakistan's Parliament.",
+details:
+"The Senate represents the federation's units and is a continuing chamber in which members serve fixed terms.",
+facts:[
+"Upper house of Parliament",
+"Represents provinces and other federal units",
+"Members serve fixed terms"
+]
+},
+
+/* =========================
+   NATIONAL SYMBOLS
+   ========================= */
+{
+name:"Flag of Pakistan",
+category:"National Symbol",
+keywords:["flag","pakistan flag","green flag","پاکستان کا جھنڈا"],
+short:"Pakistan's national flag is green and white with a white crescent and star.",
+details:
+"The flag consists mainly of a dark green field with a white vertical stripe at the hoist. A white crescent and five-pointed star appear on the green field.",
+facts:[
+"Green represents the Muslim majority",
+"White stripe represents religious minorities",
+"Crescent and star are major Islamic symbols"
+]
+},
+
+{
+name:"National Animal of Pakistan",
+category:"National Symbol",
+keywords:["national animal","markhor","مارخور"],
+short:"The markhor is Pakistan's national animal.",
+details:
+"The markhor is a wild goat species found in mountainous areas of Pakistan and neighboring regions.",
+facts:[
+"National animal: Markhor",
+"Mountain-dwelling wild goat",
+"Found in northern and western mountainous regions"
+]
+},
+
+{
+name:"National Bird of Pakistan",
+category:"National Symbol",
+keywords:["national bird","chukar","چکور"],
+short:"The chukar partridge is Pakistan's national bird.",
+details:
+"The chukar is a ground-dwelling bird found in mountainous and rocky regions.",
+facts:[
+"National bird: Chukar partridge",
+"Associated with rocky and mountainous habitats"
+]
+},
+
+{
+name:"National Flower of Pakistan",
+category:"National Symbol",
+keywords:["national flower","jasmine","چنبیلی"],
+short:"Jasmine is Pakistan's national flower.",
+details:
+"Jasmine is widely cultivated and appreciated in Pakistan for its fragrance and flowers.",
+facts:[
+"National flower: Jasmine"
+]
+},
+
+{
+name:"National Poet of Pakistan",
+category:"Famous Personality",
+keywords:["national poet","iqbal","allama iqbal","علامہ اقبال"],
+short:"Allama Muhammad Iqbal is widely recognized as Pakistan's national poet.",
+details:
+"Muhammad Iqbal was a philosopher, poet and thinker whose Urdu and Persian poetry had major influence in South Asian Muslim intellectual history.",
+facts:[
+"Born: 9 November 1877",
+"Born in Sialkot",
+"Died: 21 April 1938",
+"Known for Urdu and Persian poetry"
+]
+},
+
+{
+name:"Muhammad Ali Jinnah",
+category:"Famous Personality",
+keywords:["jinnah","quaid e azam","muhammad ali jinnah","قائد اعظم","محمد علی جناح"],
+short:"Muhammad Ali Jinnah was the founder of Pakistan and its first Governor-General.",
+details:
+"Muhammad Ali Jinnah led the All-India Muslim League during the final phase of the political movement that resulted in Pakistan's creation in 1947.",
+facts:[
+"Born: 25 December 1876",
+"Founder associated with Pakistan",
+"First Governor-General of Pakistan",
+"Died: 11 September 1948"
+]
+},
+
+{
+name:"Liaquat Ali Khan",
+category:"Famous Personality",
+keywords:["liaquat ali khan","liaquat","لیاقت علی خان"],
+short:"Liaquat Ali Khan was Pakistan's first Prime Minister.",
+details:
+"Liaquat Ali Khan was a leading figure in the Pakistan movement and served as the country's first Prime Minister after independence.",
+facts:[
+"First Prime Minister of Pakistan",
+"Prime Minister from 1947 to 1951",
+"Died in 1951"
+]
+},
+
+{
+name:"Abdus Salam",
+category:"Science Personality",
+keywords:["abdus salam","dr abdus salam","عبدالسلام"],
+short:"Abdus Salam was a Pakistani theoretical physicist and Nobel Prize winner.",
+details:
+"Abdus Salam shared the 1979 Nobel Prize in Physics for work related to the electroweak theory.",
+facts:[
+"Nobel Prize in Physics: 1979",
+"Field: Theoretical physics",
+"Born in Jhang"
+]
+},
+
+{
+name:"Malala Yousafzai",
+category:"Famous Personality",
+keywords:["malala","malala yousafzai","ملالہ"],
+short:"Malala Yousafzai is a Pakistani education activist and Nobel Peace Prize laureate.",
+details:
+"Malala became internationally known for advocacy for girls' education. She received the Nobel Peace Prize in 2014.",
+facts:[
+"Nobel Peace Prize: 2014",
+"Known for girls' education advocacy",
+"Born in Mingora, Swat"
+]
+},
+
+/* =========================
+   WARS & BATTLES
+   ========================= */
+{
+name:"Indo-Pakistani War of 1947–48",
+category:"War",
+keywords:["1947 war","1948 war","first kashmir war","indo pak war 1947","1947 48"],
+short:"The first Indo-Pakistani war began in 1947 over the princely state of Jammu and Kashmir.",
+details:
+"The conflict began after the partition of British India and the accession of the princely state of Jammu and Kashmir to India. Fighting continued until a United Nations-backed ceasefire took effect in 1949.",
+facts:[
+"Period: 1947–1948",
+"Main issue: Jammu and Kashmir",
+"Ceasefire came into effect in 1949",
+"UN involvement followed the conflict"
+]
+},
+
+{
+name:"Indo-Pakistani War of 1965",
+category:"War",
+keywords:["1965 war","1965 pakistan india war","65 war","جنگ 1965"],
+short:"The 1965 Indo-Pakistani War was a major conflict between India and Pakistan.",
+details:
+"The war was fought primarily over Kashmir and included major land and air operations. A ceasefire was followed by the Tashkent Declaration in January 1966.",
+facts:[
+"Year: 1965",
+"Participants: India and Pakistan",
+"Ceasefire followed by Tashkent Declaration",
+"Major operations occurred on multiple fronts"
+]
+},
+
+{
+name:"Indo-Pakistani War of 1971",
+category:"War",
+keywords:["1971 war","1971 pakistan india war","east pakistan war","جنگ 1971"],
+short:"The 1971 war resulted in the creation of Bangladesh.",
+details:
+"The conflict developed from the political and military crisis in East Pakistan and involved India and Pakistan. The war ended in December 1971 with the surrender of Pakistani forces in East Pakistan and the emergence of Bangladesh.",
+facts:[
+"Year: 1971",
+"Major theatre: East Pakistan",
+"Bangladesh emerged as an independent state",
+"War ended in December 1971"
+]
+},
+
+{
+name:"Kargil Conflict",
+category:"War",
+keywords:["kargil","kargil war","kargil conflict","کارگل"],
+short:"The Kargil conflict took place in 1999 in the Kargil region of Kashmir.",
+details:
+"The conflict involved Indian and Pakistani forces in high-altitude areas. Fighting occurred during 1999 and ended after Pakistani forces withdrew from positions involved in the conflict.",
+facts:[
+"Year: 1999",
+"High-altitude conflict",
+"Location: Kargil region",
+"Ended in 1999"
+]
+},
+
+/* =========================
+   ANCIENT CIVILIZATIONS
+   ========================= */
+{
+name:"Indus Valley Civilization",
+category:"Ancient Civilization",
+keywords:["indus valley civilization","harappan civilization","indus civilization","وادی سندھ تہذیب"],
+short:"The Indus Valley Civilization was an ancient Bronze Age civilization centered around the Indus River system.",
+details:
+"It developed major urban settlements including Mohenjo-daro and Harappa. It is known for urban planning, drainage, craft production and long-distance trade.",
+facts:[
+"Approximate mature phase: 2600–1900 BCE",
+"Major sites: Harappa and Mohenjo-daro",
+"Known for planned cities and drainage",
+"Bronze Age civilization"
+]
+},
+
+{
+name:"Gandhara Civilization",
+category:"Ancient Civilization",
+keywords:["gandhara","gandhara civilization","gandhara art","گندھارا"],
+short:"Gandhara was an ancient cultural region centered in parts of present-day Pakistan and Afghanistan.",
+details:
+"Gandhara became an important center of Buddhism and produced distinctive Gandharan art influenced by South Asian and Hellenistic traditions.",
+facts:[
+"Major sites: Taxila and Takht-i-Bahi",
+"Important Buddhist heritage",
+"Known for Gandharan art"
+]
+},
+
+/* =========================
+   AGRICULTURE
+   ========================= */
+{
+name:"Agriculture in Pakistan",
+category:"Agriculture",
+keywords:["agriculture","farming","crops","زرعی","زراعت"],
+short:"Agriculture is an important part of Pakistan's economy and rural livelihoods.",
+details:
+"Major agricultural products include wheat, rice, cotton, sugarcane, maize, fruits and vegetables. Irrigation relies heavily on the Indus Basin system.",
+facts:[
+"Major crops: wheat, rice, cotton and sugarcane",
+"Major fruit crops include mangoes, citrus, dates and apples",
+"Indus Basin irrigation is important"
+]
+},
+
+/* =========================
+   INDUSTRIES
+   ========================= */
+{
+name:"Textile Industry of Pakistan",
+category:"Industry",
+keywords:["textile","textile industry","garments","ٹیکسٹائل"],
+short:"Textiles are one of Pakistan's major manufacturing and export industries.",
+details:
+"The textile sector includes cotton production, spinning, weaving, processing, garments and home textiles.",
+facts:[
+"Major centers: Faisalabad, Karachi, Lahore and other industrial areas",
+"Important export sector",
+"Linked to Pakistan's large cotton industry"
+]
+},
+
+{
+name:"Sports Goods Industry of Sialkot",
+category:"Industry",
+keywords:["sialkot sports","sports goods","football industry","سیالکوٹ کھیلوں کا سامان"],
+short:"Sialkot is internationally known for manufacturing sports goods.",
+details:
+"Sialkot's industry produces footballs, protective equipment, sportswear and other sporting products for domestic and international markets.",
+facts:[
+"Location: Sialkot",
+"Major export industry",
+"Known internationally for sports goods"
+]
+},
+
+/* =========================
+   MOUNTAINS
+   ========================= */
+{
+name:"K2",
+category:"Mountain",
+keywords:["k2","mount k2","کے ٹو"],
+short:"K2 is the world's second-highest mountain above sea level and lies in the Karakoram range.",
+details:
+"K2 is located in the Karakoram on the Pakistan-China border. Its Pakistani side is in Gilgit-Baltistan.",
+facts:[
+"Elevation: 8,611 metres",
+"World's second-highest mountain",
+"Mountain range: Karakoram",
+"Pakistan-China border region"
+]
+},
+
+{
+name:"Nanga Parbat",
+category:"Mountain",
+keywords:["nanga parbat","نانگا پربت"],
+short:"Nanga Parbat is one of the world's highest mountains and is located in Gilgit-Baltistan.",
+details:
+"Nanga Parbat rises dramatically from the surrounding landscape and is one of Pakistan's best-known high mountains.",
+facts:[
+"Elevation: 8,126 metres",
+"Region: Gilgit-Baltistan",
+"Himalayan mountain system"
+]
+},
+
+{
+name:"Rakaposhi",
+category:"Mountain",
+keywords:["rakaposhi","rakaposhi mountain","راکا پوشی"],
+short:"Rakaposhi is a major mountain peak in the Karakoram near Hunza.",
+details:
+"Rakaposhi is famous for its dramatic rise above the Hunza region.",
+facts:[
+"Elevation: 7,788 metres",
+"Region: Gilgit-Baltistan",
+"Near Nagar and Hunza"
+]
+},
+
+/* =========================
+   RIVERS
+   ========================= */
+{
+name:"Indus River",
+category:"River",
+keywords:["indus river","river indus","darya sindh","دریائے سندھ"],
+short:"The Indus River is Pakistan's major river and the backbone of the Indus Basin.",
+details:
+"The Indus flows through the northern and western parts of Pakistan before reaching the Arabian Sea. Its basin supports agriculture, settlements and irrigation.",
+facts:[
+"Major river of Pakistan",
+"Flows into the Arabian Sea",
+"Central to Indus Basin irrigation",
+"Origin region lies in the Tibetan Plateau"
+]
+},
+
+{
+name:"Jhelum River",
+category:"River",
+keywords:["jhelum river","river jhelum","دریائے جہلم"],
+short:"The Jhelum River is one of the major rivers of the Indus system.",
+details:
+"The Jhelum flows through Kashmir and enters Pakistan before joining the Chenab River system.",
+facts:[
+"Major Indus tributary",
+"Flows through Kashmir",
+"Passes near Jhelum city"
+]
+},
+
+{
+name:"Chenab River",
+category:"River",
+keywords:["chenab","chenab river","دریائے چناب"],
+short:"The Chenab is one of the major rivers of the Indus Basin.",
+details:
+"The Chenab flows through Jammu and Kashmir and Pakistan's Punjab before joining the combined river system.",
+facts:[
+"Major Indus tributary",
+"Important for Punjab agriculture",
+"Flows through central Punjab"
+]
+},
+
+{
+name:"Ravi River",
+category:"River",
+keywords:["ravi","ravi river","دریائے راوی"],
+short:"The Ravi is one of the major rivers associated with Punjab.",
+details:
+"The Ravi flows through the Punjab region and is historically associated with Lahore.",
+facts:[
+"Major river of Punjab",
+"Associated with Lahore",
+"Part of the Indus river system"
+]
+},
+
+{
+name:"Sutlej River",
+category:"River",
+keywords:["sutlej","sutlej river","دریائے ستلج"],
+short:"The Sutlej is one of the major rivers of the Indus Basin.",
+details:
+"The Sutlej flows from Tibet through India and into Pakistan, where it contributes to the combined river system.",
+facts:[
+"Major Indus tributary",
+"Flows through Punjab"
+]
+},
+
+/* =========================
+   NATIONAL PARKS
+   ========================= */
+{
+name:"Khunjerab National Park",
+category:"National Park",
+keywords:["khunjerab","khunjerab national park","خنجراب"],
+short:"Khunjerab National Park is a high-altitude protected area in Gilgit-Baltistan.",
+details:
+"The park lies near the Pakistan-China border and is known for high mountain landscapes and wildlife including the snow leopard.",
+facts:[
+"Region: Gilgit-Baltistan",
+"Near Khunjerab Pass",
+"High-altitude ecosystem",
+"Snow leopard habitat"
+]
+},
+
+{
+name:"Ayubia National Park",
+category:"National Park",
+keywords:["ayubia","ayubia national park","ایوبیہ"],
+short:"Ayubia National Park is a forested protected area in Khyber Pakhtunkhwa.",
+details:
+"Ayubia is known for coniferous forests, mountain scenery and hiking routes.",
+facts:[
+"Province: Khyber Pakhtunkhwa",
+"Near Abbottabad",
+"Forest ecosystem",
+"Popular for hiking and tourism"
+]
+},
+
+/* =========================
+   BEACHES
+   ========================= */
+{
+name:"Clifton Beach",
+category:"Beach",
+keywords:["clifton beach","karachi beach","کلفٹن"],
+short:"Clifton Beach is a well-known urban beach in Karachi.",
+details:
+"Clifton Beach lies along Karachi's Arabian Sea coastline and is a popular recreational area.",
+facts:[
+"Location: Karachi",
+"Arabian Sea",
+"Urban recreational beach"
+]
+},
+
+{
+name:"Hawke's Bay",
+category:"Beach",
+keywords:["hawkes bay","hawke's bay","hawksbay","ہاکس بے"],
+short:"Hawke's Bay is a coastal recreational area near Karachi.",
+details:
+"It is known for sandy beaches and coastal recreation.",
+facts:[
+"Location: Karachi",
+"Arabian Sea",
+"Popular coastal recreation area"
+]
+},
+
+/* =========================
+   TOURISM
+   ========================= */
+{
+name:"Pakistan Tourism",
+category:"Tourism",
+keywords:["tourism","tourist","travel pakistan","visit pakistan","سیاحت","tourism pakistan"],
+short:"Pakistan offers mountain, heritage, coastal, desert and cultural tourism.",
+details:
+"Major tourism regions include northern mountain areas, historic cities of Punjab and Sindh, the Makran coast, archaeological sites and religious heritage.",
+facts:[
+"Mountain tourism: Hunza, Skardu, Swat, Naran and Chitral",
+"Heritage tourism: Lahore, Taxila, Thatta and Mohenjo-daro",
+"Coastal tourism: Karachi, Gwadar and Makran coast",
+"Desert tourism: Cholistan and Thar"
+]
+},
+
+/* =========================
+   RELIGIOUS HERITAGE
+   ========================= */
+{
+name:"Kartarpur Corridor",
+category:"Religious Heritage",
+keywords:["kartarpur","kartarpur corridor","کرتارپور"],
+short:"The Kartarpur Corridor connects Gurdwara Darbar Sahib Kartarpur in Pakistan with India for Sikh pilgrims.",
+details:
+"Gurdwara Darbar Sahib Kartarpur is associated with Guru Nanak, the founder of Sikhism. The corridor facilitates pilgrimage from India to the shrine.",
+facts:[
+"Location: Narowal District, Punjab",
+"Important Sikh pilgrimage site",
+"Associated with Guru Nanak"
+]
+},
+
+{
+name:"Data Darbar",
+category:"Religious Heritage",
+keywords:["data darbar","data sahib","داتا دربار"],
+short:"Data Darbar is a major Sufi shrine in Lahore.",
+details:
+"The shrine is associated with Ali Hujwiri, also known as Data Ganj Bakhsh, an influential Islamic scholar and Sufi figure.",
+facts:[
+"Location: Lahore",
+"Associated with Ali Hujwiri",
+"Major Sufi shrine"
+]
+},
+
+/* =========================
+   MODERN PAKISTAN
+   ========================= */
+{
+name:"CPEC",
+category:"Modern Pakistan",
+keywords:["cpec","china pakistan economic corridor","corridor","سی پیک"],
+short:"CPEC is a major economic and infrastructure cooperation framework between Pakistan and China.",
+details:
+"The China-Pakistan Economic Corridor includes cooperation in energy, infrastructure, transport and other economic areas.",
+facts:[
+"Full name: China-Pakistan Economic Corridor",
+"Part of broader Belt and Road cooperation",
+"Includes infrastructure and energy projects"
+]
+}
+
+];
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+const messages = document.getElementById("messages");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("sendBtn");
+const clearBtn = document.getElementById("clearBtn");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const welcome = document.getElementById("welcome");
+
+let sessionHistory = JSON.parse(sessionStorage.getItem("pakai_history") || "[]");
+
+function detectLanguage(text){
+  if(/[\u0600-\u06FF]/.test(text)) return "ur";
+
+  const romanWords = [
+    "hai","hain","ho","houn","kya","kia","ka","ki","ke","ko","mein",
+    "main","mujhe","mera","meri","mere","aap","ap","batao","batain",
+    "bataen","kahan","kab","kyun","kaise","kis","se","par","aur",
+    "yeh","yah","woh","wo","pakistan","ke","bare","mein"
+  ];
+
+  const words = text.toLowerCase().replace(/[?!.,]/g," ").split(/\s+/);
+  let score = words.filter(w=>romanWords.includes(w)).length;
+
+  return score >= 1 ? "roman" : "en";
+}
+
+function cleanPlainText(text){
+  if(!text) return "";
+
+  return String(text)
+    .replace(/<br\s*\/?>/gi,"\n")
+    .replace(/<\/(p|div|li|h1|h2|h3|h4|section)>/gi,"\n")
+    .replace(/<li[^>]*>/gi,"• ")
+    .replace(/<[^>]+>/g,"")
+    .replace(/^\s*#{1,6}\s*/gm,"")
+    .replace(/^\s*>\s?/gm,"")
+    .replace(/\*\*(.*?)\*\*/g,"$1")
+    .replace(/__(.*?)__/g,"$1")
+    .replace(/`([^`]+)`/g,"$1")
+    .replace(/\n{3,}/g,"\n\n")
+    .trim();
+}
+
+function textAnswer(en, roman, ur){
+  const lang = currentLanguage || "en";
+  if(lang==="ur") return ur || en;
+  if(lang==="roman") return roman || en;
+  return en;
+}
+
+let currentLanguage="en";
+
+function saveHistory(){
+  sessionStorage.setItem("pakai_history",JSON.stringify(sessionHistory.slice(-60)));
+}
+
+function scrollBottom(){
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function addMessage(role,text,animate=true){
+  const clean = cleanPlainText(text);
+  if(!clean) return null;
+
+  if(welcome) welcome.style.display="none";
+
+  const row=document.createElement("div");
+  row.className="message "+role;
+
+  const avatar=document.createElement("div");
+  avatar.className="avatar";
+  avatar.textContent=role==="user"?"You":"🇵🇰";
+
+  const content=document.createElement("div");
+
+  const bubble=document.createElement("div");
+  bubble.className="bubble";
+  bubble.dir="auto";
+
+  if(animate && role==="ai"){
+    bubble.textContent="";
+    typeText(bubble,clean);
+  }else{
+    bubble.textContent=clean;
+  }
+
+  content.appendChild(bubble);
+
+  if(role==="ai"){
+    const actions=document.createElement("div");
+    actions.className="message-actions";
+
+    const speak=document.createElement("button");
+    speak.textContent="🔊 Listen";
+    speak.onclick=()=>speakText(clean);
+
+    actions.appendChild(speak);
+    content.appendChild(actions);
+  }
+
+  row.appendChild(avatar);
+  row.appendChild(content);
+  messages.appendChild(row);
+  scrollBottom();
+
+  return bubble;
+}
+
+function typeText(element,text){
+  let i=0;
+  const speed=3;
+
+  function tick(){
+    if(i<text.length){
+      element.textContent += text.charAt(i++);
+      scrollBottom();
+      requestAnimationFrame(tick);
+    }
+  }
+  tick();
+}
+
+function addTyping(){
+  const row=document.createElement("div");
+  row.className="message ai";
+  row.id="typingMessage";
+
+  const avatar=document.createElement("div");
+  avatar.className="avatar";
+  avatar.textContent="🇵🇰";
+
+  const bubble=document.createElement("div");
+  bubble.className="bubble";
+
+  const typing=document.createElement("div");
+  typing.className="typing";
+  typing.innerHTML="<span></span><span></span><span></span>";
+
+  bubble.appendChild(typing);
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  messages.appendChild(row);
+  scrollBottom();
+}
+
+function removeTyping(){
+  document.getElementById("typingMessage")?.remove();
+}
+
+function normalize(text){
+  return text
+    .toLowerCase()
+    .replace(/[’']/g,"'")
+    .replace(/[?!.,:;()[\]{}]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function scoreEntry(entry,query){
+  const q=normalize(query);
+  const terms=q.split(" ").filter(Boolean);
+
+  const hay=normalize([
+    entry.name,
+    entry.category,
+    ...(entry.keywords||[]),
+    entry.short,
+    entry.details
+  ].join(" "));
+
+  let score=0;
+
+  if(hay.includes(q)) score+=25;
+  if(normalize(entry.name)===q) score+=100;
+  if(q.includes(normalize(entry.name))) score+=45;
+
+  for(const t of terms){
+    if(t.length<2) continue;
+    if(hay.includes(t)) score+=2;
+    if(normalize(entry.name).includes(t)) score+=7;
+    if((entry.keywords||[]).some(k=>normalize(k).includes(t))) score+=5;
+  }
+
+  return score;
+}
+
+function searchDB(query){
+  return DB
+    .map(entry=>({entry,score:scoreEntry(entry,query)}))
+    .filter(x=>x.score>2)
+    .sort((a,b)=>b.score-a.score)
+    .map(x=>x.entry);
+}
+
+function findBest(query){
+  return searchDB(query)[0] || null;
+}
+
+function isBroadQuestion(q){
+  const words=q.split(/\s+/).length;
+  return words>=5 ||
+    /complete|detail|details|history|explain|explain karo|full|all|everything|bare mein|کے بارے میں|تفصیل/.test(q);
+}
+
+function entryResponse(entry,question){
+  const lang=detectLanguage(question);
+  currentLanguage=lang;
+
+  const detailed=isBroadQuestion(normalize(question));
+
+  if(!detailed){
+    if(lang==="ur"){
+      return entry.short;
+    }
+    if(lang==="roman"){
+      return romanizeShort(entry);
+    }
+    return entry.short;
+  }
+
+  if(lang==="ur"){
+    return urduDetailed(entry);
+  }
+
+  if(lang==="roman"){
+    return romanDetailed(entry);
+  }
+
+  return englishDetailed(entry);
+}
+
+function englishDetailed(e){
+  let out=e.short;
+
+  if(e.details) out += "\n\n"+e.details;
+
+  if(e.facts?.length){
+    out += "\n\nKey facts:\n";
+    out += e.facts.map(x=>"• "+x).join("\n");
+  }
+
+  return out;
+}
+
+function romanDetailed(e){
+  let out=romanizeShort(e);
+
+  const map={
+    "Pakistan":"Pakistan",
+    "Punjab":"Punjab",
+    "Sindh":"Sindh",
+    "Khyber Pakhtunkhwa":"Khyber Pakhtunkhwa",
+    "Balochistan":"Balochistan"
+  };
+
+  let detail=e.details||"";
+  detail=detail
+    .replace(/Pakistan is/g,"Pakistan")
+    .replace(/is known for/g,"ke liye mashhoor hai")
+    .replace(/located/g,"waqay")
+    .replace(/Location/g,"Jagah")
+    .replace(/Major/g,"Aham");
+
+  out += "\n\n"+detail;
+
+  if(e.facts?.length){
+    out += "\n\nAham maloomat:\n";
+    out += e.facts.map(x=>"• "+romanizeFact(x)).join("\n");
+  }
+
+  return out;
+}
+
+function romanizeShort(e){
+  const translations={
+    "Pakistan is a country in South Asia. Its capital is Islamabad.":"Pakistan South Asia ka aik mulk hai. Is ka dar-ul-hukumat Islamabad hai.",
+    "Punjab is Pakistan's most populous province and is centered on the Indus plain.":"Punjab Pakistan ka sab se zyada abadi wala suba hai.",
+    "Sindh is a province in southeastern Pakistan. Karachi is its capital.":"Sindh Pakistan ka aik suba hai aur Karachi iska capital hai.",
+    "Khyber Pakhtunkhwa is a mountainous province in northwestern Pakistan.":"Khyber Pakhtunkhwa Pakistan ka pahari suba hai.",
+    "Balochistan is Pakistan's largest province by area.":"Balochistan area ke lihaz se Pakistan ka sab se bara suba hai.",
+    "Islamabad is the capital city of Pakistan.":"Islamabad Pakistan ka dar-ul-hukumat hai.",
+    "Lahore is the capital of Punjab and one of Pakistan's major cultural and historical cities.":"Lahore Punjab ka capital aur Pakistan ka aham saqafati aur tareekhi shehar hai.",
+    "Karachi is Pakistan's largest city and a major economic and port center.":"Karachi Pakistan ka sab se bara shehar aur aham maashi aur bandargahi markaz hai.",
+    "Rohtas Fort is a major 16th-century fort near Jhelum.":"Rohtas Fort Jhelum ke qareeb 16th sadi ka aham qila hai.",
+    "Mohenjo-daro is one of the major archaeological sites of the Indus Valley Civilization.":"Mohenjo-daro Wadi-e-Sindh Tehzeeb ka bohat aham qadim archaeological maqam hai.",
+    "Harappa is a major archaeological site of the Indus Valley Civilization.":"Harappa Wadi-e-Sindh Tehzeeb ka aik aham qadim archaeological maqam hai.",
+    "K2 is the world's second-highest mountain above sea level and lies in the Karakoram range.":"K2 samandar ki satah se bulandi ke lihaz se duniya ka doosra sab se uncha pahaar hai.",
+    "The markhor is Pakistan's national animal.":"Markhor Pakistan ka qaumi janwar hai.",
+    "The chukar partridge is Pakistan's national bird.":"Chakor Pakistan ka qaumi parinda hai.",
+    "Jasmine is Pakistan's national flower.":"Chambeli Pakistan ka qaumi phool hai.",
+    "Muhammad Ali Jinnah was the founder of Pakistan and its first Governor-General.":"Muhammad Ali Jinnah Pakistan ke baani aur pehle Governor-General thay.",
+    "Allama Muhammad Iqbal is widely recognized as Pakistan's national poet.":"Allama Muhammad Iqbal ko Pakistan ka qaumi shair mana jata hai.",
+    "Pakistan's armed forces consist of the Pakistan Army, Pakistan Navy and Pakistan Air Force.":"Pakistan ki musallah afwaj mein Pakistan Army, Pakistan Navy aur Pakistan Air Force shamil hain.",
+    "The Constitution of Pakistan was adopted in 1973.":"Pakistan ka Aain 1973 mein manzoor hua."
+  };
+
+  return translations[e.short] || e.short;
+}
+
+function romanizeFact(f){
+  const replacements=[
+    [/Location:/g,"Jagah:"],
+    [/Province:/g,"Suba:"],
+    [/Region:/g,"Ilaqa:"],
+    [/Capital:/g,"Dar-ul-hukumat:"],
+    [/Year:/g,"Saal:"],
+    [/Born:/g,"Paidaish:"],
+    [/Died:/g,"Wafat:"],
+    [/Established:/g,"Qayam hua:"],
+    [/National animal:/g,"Qaumi janwar:"],
+    [/National bird:/g,"Qaumi parinda:"],
+    [/National flower:/g,"Qaumi phool:"],
+    [/National language:/g,"Qaumi zaban:"],
+    [/World's second-highest mountain/g,"Duniya ka doosra sab se uncha pahaar"]
+  ];
+
+  let x=f;
+  replacements.forEach(([a,b])=>x=x.replace(a,b));
+  return x;
+}
+
+function urduDetailed(e){
+  const translations={
+    "Pakistan is a country in South Asia. Its capital is Islamabad.":"پاکستان جنوبی ایشیا کا ایک ملک ہے۔ اس کا دارالحکومت اسلام آباد ہے۔",
+    "Punjab is Pakistan's most populous province and is centered on the Indus plain.":"پنجاب پاکستان کا سب سے زیادہ آبادی والا صوبہ ہے۔",
+    "Sindh is a province in southeastern Pakistan. Karachi is its capital.":"سندھ پاکستان کا جنوب مشرقی صوبہ ہے اور اس کا دارالحکومت کراچی ہے۔",
+    "Khyber Pakhtunkhwa is a mountainous province in northwestern Pakistan.":"خیبر پختونخوا پاکستان کا ایک پہاڑی صوبہ ہے۔",
+    "Balochistan is Pakistan's largest province by area.":"بلوچستان رقبے کے لحاظ سے پاکستان کا سب سے بڑا صوبہ ہے۔",
+    "Islamabad is the capital city of Pakistan.":"اسلام آباد پاکستان کا دارالحکومت ہے۔",
+    "Lahore is the capital of Punjab and one of Pakistan's major cultural and historical cities.":"لاہور پنجاب کا دارالحکومت اور پاکستان کے اہم ثقافتی و تاریخی شہروں میں شامل ہے۔",
+    "Karachi is Pakistan's largest city and a major economic and port center.":"کراچی پاکستان کا سب سے بڑا شہر اور اہم معاشی و بندرگاہی مرکز ہے۔",
+    "Rohtas Fort is a major 16th-century fort near Jhelum.":"قلعہ روہتاس جہلم کے قریب 16ویں صدی کا ایک اہم قلعہ ہے۔",
+    "Mohenjo-daro is one of the major archaeological sites of the Indus Valley Civilization.":"موئن جو دڑو وادیٔ سندھ تہذیب کے اہم آثارِ قدیمہ میں شامل ہے۔",
+    "Harappa is a major archaeological site of the Indus Valley Civilization.":"ہڑپہ وادیٔ سندھ تہذیب کا ایک اہم آثارِ قدیمہ کا مقام ہے۔",
+    "K2 is the world's second-highest mountain above sea level and lies in the Karakoram range.":"کے ٹو سطح سمندر سے بلندی کے لحاظ سے دنیا کا دوسرا بلند ترین پہاڑ ہے اور قراقرم کے سلسلے میں واقع ہے۔",
+    "The markhor is Pakistan's national animal.":"مارخور پاکستان کا قومی جانور ہے۔",
+    "The chukar partridge is Pakistan's national bird.":"چکور پاکستان کا قومی پرندہ ہے۔",
+    "Jasmine is Pakistan's national flower.":"چنبیلی پاکستان کا قومی پھول ہے۔",
+    "Muhammad Ali Jinnah was the founder of Pakistan and its first Governor-General.":"محمد علی جناح پاکستان کے بانی اور پہلے گورنر جنرل تھے۔",
+    "Allama Muhammad Iqbal is widely recognized as Pakistan's national poet.":"علامہ محمد اقبال کو پاکستان کا قومی شاعر کہا جاتا ہے۔",
+    "Pakistan's armed forces consist of the Pakistan Army, Pakistan Navy and Pakistan Air Force.":"پاکستان کی مسلح افواج میں پاک فوج، پاک بحریہ اور پاک فضائیہ شامل ہیں۔",
+    "The Constitution of Pakistan was adopted in 1973.":"پاکستان کا آئین 1973 میں منظور کیا گیا۔"
+  };
+
+  let out=translations[e.short] || e.short;
+
+  if(e.details) out += "\n\n"+e.details;
+
+  if(e.facts?.length){
+    out += "\n\nاہم معلومات:\n";
+    out += e.facts.map(x=>"• "+urduFact(x)).join("\n");
+  }
+
+  return out;
+}
+
+function urduFact(f){
+  return f
+    .replace(/^Location:/,"مقام:")
+    .replace(/^Province:/,"صوبہ:")
+    .replace(/^Region:/,"خطہ:")
+    .replace(/^Capital:/,"دارالحکومت:")
+    .replace(/^Year:/,"سال:")
+    .replace(/^Born:/,"پیدائش:")
+    .replace(/^Died:/,"وفات:")
+    .replace(/^Established:/,"قیام:")
+    .replace(/^National animal:/,"قومی جانور:")
+    .replace(/^National bird:/,"قومی پرندہ:")
+    .replace(/^National flower:/,"قومی پھول:");
+}
+
+/* =========================================================
+   SPECIAL ANSWERS
+   ========================================================= */
+
+function answerQuestion(question){
+
+  const q=normalize(question);
+  currentLanguage=detectLanguage(question);
+
+  /* greetings */
+  if(/^(hi|hello|hey|salam|assalam|assalam o alaikum|aoa|السلام علیکم|سلام)$/.test(q)){
+    return textAnswer(
+      "Wa Alaikum Assalam! What would you like to know about Pakistan?",
+      "Wa Alaikum Assalam! Pakistan ke bare mein kya maloom karna hai?",
+      "وعلیکم السلام! آپ پاکستان کے بارے میں کیا جاننا چاہتے ہیں؟"
+    );
+  }
+
+  /* thanks */
+  if(/thank|thanks|shukriya|شکریہ/.test(q)){
+    return textAnswer(
+      "You're welcome.",
+      "Khush aamdeed.",
+      "خوش آمدید۔"
+    );
+  }
+
+  /* exact short factual questions */
+  if(/capital.*pakistan|pakistan.*capital|دارالحکومت.*پاکستان/.test(q)){
+    return textAnswer(
+      "Islamabad.",
+      "Islamabad.",
+      "اسلام آباد۔"
+    );
+  }
+
+  if(/national animal|qaumi janwar|قومی جانور/.test(q)){
+    return textAnswer(
+      "Markhor.",
+      "Markhor.",
+      "مارخور۔"
+    );
+  }
+
+  if(/national bird|qaumi parinda|قومی پرندہ/.test(q)){
+    return textAnswer(
+      "Chukar partridge.",
+      "Chakor.",
+      "چکور۔"
+    );
+  }
+
+  if(/national flower|qaumi phool|قومی پھول/.test(q)){
+    return textAnswer(
+      "Jasmine.",
+      "Chambeli.",
+      "چنبیلی۔"
+    );
+  }
+
+  if(/founder.*pakistan|baani.*pakistan|بانی.*پاکستان/.test(q)){
+    return textAnswer(
+      "Muhammad Ali Jinnah.",
+      "Muhammad Ali Jinnah.",
+      "محمد علی جناح۔"
+    );
+  }
+
+  /* wars list */
+  if(
+    /pakistan.*wars|wars.*pakistan|pakistan.*war|jangein|jungain|جنگیں|جنگوں/.test(q)
+    && !/1965|1971|1947|kargil|کارگل/.test(q)
+  ){
+    return textAnswer(
+      "Major Pakistan-related wars and conflicts include:\n• Indo-Pakistani War of 1947–48\n• Indo-Pakistani War of 1965\n• Indo-Pakistani War of 1971\n• Kargil Conflict of 1999",
+      "Pakistan se related aham jangon aur conflicts mein shamil hain:\n• 1947–48 ki Indo-Pakistani War\n• 1965 ki Indo-Pakistani War\n• 1971 ki Indo-Pakistani War\n• 1999 ka Kargil Conflict",
+      "پاکستان سے متعلق اہم جنگوں اور تنازعات میں شامل ہیں:\n• 1947–48 کی پاک بھارت جنگ\n• 1965 کی پاک بھارت جنگ\n• 1971 کی پاک بھارت جنگ\n• 1999 کا کارگل تنازع"
+    );
+  }
+
+  /* provinces */
+  if(/provinces|province|subay|suba|صوبے|صوبوں/.test(q)){
+    return textAnswer(
+      "Pakistan has four provinces:\n• Punjab\n• Sindh\n• Khyber Pakhtunkhwa\n• Balochistan",
+      "Pakistan ke 4 subay hain:\n• Punjab\n• Sindh\n• Khyber Pakhtunkhwa\n• Balochistan",
+      "پاکستان کے چار صوبے ہیں:\n• پنجاب\n• سندھ\n• خیبر پختونخوا\n• بلوچستان"
+    );
+  }
+
+  /* political system */
+  if(/political system|system of government|hukoomat ka nizam|siyasi nizam|سیاسی نظام|حکومت کا نظام/.test(q)){
+    return textAnswer(
+      "Pakistan is a federal parliamentary republic. The President is the head of state and the Prime Minister is the head of government.",
+      "Pakistan aik federal parliamentary republic hai. President head of state aur Prime Minister head of government hota hai.",
+      "پاکستان ایک وفاقی پارلیمانی جمہوریہ ہے۔ صدر مملکت ریاست کے سربراہ اور وزیر اعظم حکومت کے سربراہ ہوتے ہیں۔"
+    );
+  }
+
+  /* people */
+  if(/famous people|famous persons|mashhoor log|mashoor log|مشہور لوگ|مشہور شخصیات/.test(q)){
+    return textAnswer(
+      "Some internationally or nationally prominent Pakistani personalities include Muhammad Ali Jinnah, Allama Muhammad Iqbal, Liaquat Ali Khan, Abdus Salam, Malala Yousafzai and many others.",
+      "Pakistan ki mashhoor shakhsiyat mein Muhammad Ali Jinnah, Allama Muhammad Iqbal, Liaquat Ali Khan, Abdus Salam aur Malala Yousafzai shamil hain.",
+      "پاکستان کی مشہور شخصیات میں محمد علی جناح، علامہ محمد اقبال، لیاقت علی خان، عبدالسلام اور ملالہ یوسفزئی شامل ہیں۔"
+    );
+  }
+
+  /* city/place direct matching */
+  const best=findBest(question);
+
+  if(best){
+    return entryResponse(best,question);
+  }
+
+  /* trip planner */
+  if(/trip|travel|tour|safar|trip plan|tour plan|سفر|سیاحت/.test(q)){
+    return makeTripPlan(question);
+  }
+
+  /* fallback */
+  return textAnswer(
+    "I don't have enough verified information about this specific topic in my current Pakistan database.",
+    "Mere current Pakistan database mein is specific topic ke bare mein kafi verified information mojood nahi hai.",
+    "میرے موجودہ پاکستان ڈیٹا بیس میں اس مخصوص موضوع کے بارے میں کافی تصدیق شدہ معلومات موجود نہیں ہیں۔"
+  );
+}
+
+/* =========================================================
+   SIMPLE TRIP PLANNER
+   ========================================================= */
+
+function makeTripPlan(question){
+  const q=normalize(question);
+  const places=[
+    "lahore","hunza","skardu","islamabad","swat","naran",
+    "karachi","murree","gilgit","chitral","bahawalpur"
+  ];
+
+  const place=places.find(x=>q.includes(x));
+
+  if(!place){
+    return textAnswer(
+      "Please name the Pakistani destination you want to plan.",
+      "Jis Pakistani destination ka trip plan chahiye us ka naam bata dein.",
+      "جس پاکستانی مقام کا سفر پلان کرنا ہے اس کا نام بتائیں۔"
+    );
+  }
+
+  const plans={
+    lahore:[
+      "Day 1: Lahore Fort, Badshahi Mosque and Walled City.",
+      "Day 2: Shalimar Gardens, museums and cultural areas.",
+      "Day 3: Minar-e-Pakistan, food exploration and remaining heritage sites."
+    ],
+    hunza:[
+      "Day 1: Karimabad, Baltit Fort and local markets.",
+      "Day 2: Altit Fort and Attabad Lake.",
+      "Day 3: Explore nearby mountain viewpoints and villages."
+    ],
+    skardu:[
+      "Day 1: Skardu town and nearby viewpoints.",
+      "Day 2: Shigar Fort and Shigar Valley.",
+      "Day 3: Satpara Lake or another nearby attraction depending on conditions."
+    ],
+    islamabad:[
+      "Day 1: Faisal Mosque, Daman-e-Koh and Margalla Hills.",
+      "Day 2: Pakistan Monument and major museums.",
+      "Day 3: Rawalpindi old city and nearby attractions."
+    ],
+    swat:[
+      "Day 1: Mingora and Saidu Sharif.",
+      "Day 2: Kalam and surrounding valley.",
+      "Day 3: Nearby waterfalls, forests or viewpoints depending on conditions."
+    ],
+    naran:[
+      "Day 1: Naran town and Kaghan Valley.",
+      "Day 2: Lake Saif-ul-Malook.",
+      "Day 3: Explore nearby valley attractions subject to road and weather conditions."
+    ],
+    karachi:[
+      "Day 1: Quaid's Mausoleum and central Karachi.",
+      "Day 2: Clifton Beach and coastal areas.",
+      "Day 3: Museums, markets and historical areas."
+    ],
+    murree:[
+      "Day 1: Mall Road and central Murree.",
+      "Day 2: Patriata/New Murree.",
+      "Day 3: Nearby hill stations and viewpoints."
+    ],
+    gilgit:[
+      "Day 1: Gilgit city and surrounding viewpoints.",
+      "Day 2: Explore nearby valleys.",
+      "Day 3: Continue toward Hunza or another nearby destination."
+    ],
+    chitral:[
+      "Day 1: Chitral town.",
+      "Day 2: Kalash Valley area.",
+      "Day 3: Nearby mountain and cultural attractions."
+    ],
+    bahawalpur:[
+      "Day 1: Noor Mahal and Bahawalpur city.",
+      "Day 2: Derawar Fort and Cholistan.",
+      "Day 3: Nearby heritage and cultural sites."
+    ]
+  };
+
+  const plan=plans[place];
+
+  if(currentLanguage==="ur"){
+    return "3 روزہ سفر کا بنیادی پلان:\n\n"+plan.join("\n\n");
+  }
+
+  if(currentLanguage==="roman"){
+    return "3 din ka basic trip plan:\n\n"+plan.map(x=>x.replace(/^Day/,"Din")).join("\n\n");
+  }
+
+  return "3-day basic trip plan:\n\n"+plan.join("\n\n");
+}
+
+/* =========================================================
+   SEARCH RESULTS
+   ========================================================= */
+
+function showSearchResults(query){
+  const results=searchDB(query).slice(0,8);
+
+  document.querySelectorAll(".results").forEach(x=>x.remove());
+
+  if(!results.length){
+    addMessage("ai",textAnswer(
+      "No matching information was found in the current local Pakistan database.",
+      "Current local Pakistan database mein matching information nahi mili.",
+      "موجودہ مقامی پاکستان ڈیٹا بیس میں متعلقہ معلومات نہیں ملیں۔"
+    ));
+    return;
+  }
+
+  if(welcome) welcome.style.display="none";
+
+  const wrap=document.createElement("div");
+  wrap.className="results";
+
+  results.forEach(e=>{
+    const card=document.createElement("div");
+    card.className="result-card";
+
+    const title=document.createElement("strong");
+    title.textContent=e.name;
+
+    const cat=document.createElement("small");
+    cat.textContent=e.category;
+
+    const p=document.createElement("p");
+    p.textContent=e.short;
+
+    const btn=document.createElement("button");
+    btn.textContent="Ask PakAI about this";
+    btn.onclick=()=>{
+      input.value=e.name+" ke bare mein batao";
+      sendMessage();
+    };
+
+    card.append(title,cat,p,btn);
+    wrap.appendChild(card);
+  });
+
+  messages.appendChild(wrap);
+  scrollBottom();
+}
+
+/* =========================================================
+   VOICE
+   ========================================================= */
+
+function speakText(text){
+  if(!("speechSynthesis" in window)) return;
+
+  speechSynthesis.cancel();
+
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=currentLanguage==="ur"?"ur-PK":"en-US";
+  u.rate=.95;
+  speechSynthesis.speak(u);
+}
+
+let recognition=null;
+
+function setupVoice(){
+  const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+    return null;
+  }
+
+  recognition=new SpeechRecognition();
+  recognition.continuous=false;
+  recognition.interimResults=false;
+
+  recognition.onresult=e=>{
+    input.value=e.results[0][0].transcript;
+    input.dispatchEvent(new Event("input"));
+  };
+
+  recognition.onerror=()=>{};
+  return recognition;
+}
+
+setupVoice();
+
+document.getElementById("micBtn").onclick=()=>{
+  if(!recognition){
+    addMessage("ai",textAnswer(
+      "Voice input is not supported by this browser.",
+      "Is browser mein voice input support nahi karta.",
+      "اس براؤزر میں وائس ان پٹ سپورٹ نہیں کرتا۔"
+    ));
+    return;
+  }
+
+  recognition.lang=currentLanguage==="ur"?"ur-PK":"en-US";
+  recognition.start();
+};
+
+/* =========================================================
+   SEND
+   ========================================================= */
+
+/* =========================================================
+   GEMINI PAKISTAN AI
+   The browser sends only the question, recent chat history,
+   and the most relevant local DB entries to the secure Netlify function.
+   The Gemini API key never appears in this HTML file.
+   ========================================================= */
+
+function compactEntry(e){
+  return {
+    name:e.name || "",
+    category:e.category || "",
+    keywords:Array.isArray(e.keywords) ? e.keywords.slice(0,20) : [],
+    short:e.short || "",
+    details:e.details || "",
+    facts:Array.isArray(e.facts) ? e.facts.slice(0,20) : []
+  };
+}
+
+function getRelevantAIEntries(question){
+  const queries=[question];
+
+  /* For follow-up questions such as “kab bana?” use the previous
+     user question to recover the entity (for example Lahore Fort). */
+  const previousUsers=sessionHistory
+    .filter(x=>x.role==="user")
+    .slice(-3)
+    .map(x=>x.text)
+    .filter(Boolean);
+
+  queries.push(...previousUsers);
+
+  const ranked=[];
+  const seen=new Set();
+
+  for(const q of queries){
+    for(const e of searchDB(q).slice(0,6)){
+      const key=e.name || JSON.stringify(e);
+      if(!seen.has(key)){
+        seen.add(key);
+        ranked.push(e);
+      }
+    }
+  }
+
+  return ranked.slice(0,10).map(compactEntry);
+}
+
+async function askPakistanAI(question){
+  const payload={
+    question,
+    language:detectLanguage(question),
+    history:sessionHistory.slice(-10).map(x=>({
+      role:x.role,
+      text:x.text
+    })),
+    database:getRelevantAIEntries(question)
+  };
+
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),30000);
+
+  try{
+    const response=await fetch("/.netlify/functions/gemini",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload),
+      signal:controller.signal
+    });
+
+    const data=await response.json().catch(()=>({}));
+
+    if(!response.ok || !data.answer){
+      throw new Error(data.error || "AI request failed");
+    }
+
+    return data.answer.trim();
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+async function sendMessage(){
+
+  const question=input.value.trim();
+  if(!question) return;
+
+  input.value="";
+  input.style.height="auto";
+
+  addMessage("user",question,false);
+
+  sessionHistory.push({
+    role:"user",
+    text:question,
+    time:Date.now()
+  });
+  saveHistory();
+
+  addTyping();
+
+  let answer;
+
+  try{
+    answer=await askPakistanAI(question);
+  }catch(error){
+    console.warn("Pakistan AI unavailable; using local database fallback.",error);
+    answer=answerQuestion(question);
+  }
+
+  removeTyping();
+
+  addMessage("ai",answer,true);
+
+  sessionHistory.push({
+    role:"ai",
+    text:answer,
+    time:Date.now()
+  });
+  saveHistory();
+}
+
+sendBtn.onclick=sendMessage;
+
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+input.addEventListener("input",()=>{
+  input.style.height="auto";
+  input.style.height=Math.min(input.scrollHeight,130)+"px";
+});
+
+/* =========================================================
+   CLEAR
+   ========================================================= */
+
+clearBtn.onclick=()=>{
+  sessionHistory=[];
+  sessionStorage.removeItem("pakai_history");
+
+  messages.innerHTML="";
+  messages.appendChild(createWelcome());
+};
+
+function createWelcome(){
+  const div=document.createElement("div");
+  div.className="welcome";
+
+  const logo=document.createElement("div");
+  logo.className="welcome-logo";
+  logo.textContent="🇵🇰";
+
+  const h=document.createElement("h2");
+  h.textContent="Assalam-o-Alaikum 👋";
+
+  const p=document.createElement("p");
+  p.textContent="Ask me about Pakistan — places, cities, people, history, wars, politics, culture, food, tourism, education, geography and much more.";
+
+  const suggestions=document.createElement("div");
+  suggestions.className="suggestions";
+
+  [
+    ["Pakistan ka capital kya hai?","Capital"],
+    ["Lahore Fort kya hai?","Lahore Fort"],
+    ["Pakistan ki wars","Wars"],
+    ["Pakistan ki politics","Politics"],
+    ["Pakistan ke famous log","People"],
+    ["Hunza ke bare mein batao","Hunza"],
+    ["Pakistan ke famous foods","Food"],
+    ["Pakistan ke provinces","Provinces"]
+  ].forEach(([q,label])=>{
+    const b=document.createElement("button");
+    b.textContent=label;
+    b.dataset.q=q;
+    b.onclick=()=>{
+      input.value=q;
+      sendMessage();
+    };
+    suggestions.appendChild(b);
+  });
+
+  div.append(logo,h,p,suggestions);
+  return div;
+}
+
+/* =========================================================
+   QUICK BUTTONS
+   ========================================================= */
+
+document.querySelectorAll("[data-q]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    input.value=btn.dataset.q;
+    sendMessage();
+  });
+});
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+searchBtn.onclick=()=>{
+  const q=searchInput.value.trim();
+  if(!q) return;
+
+  addMessage("user","Search: "+q,false);
+  showSearchResults(q);
+  searchInput.value="";
+};
+
+searchInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    searchBtn.click();
+  }
+});
+
+/* =========================================================
+   RESTORE SESSION
+   ========================================================= */
+
+function restoreSession(){
+  if(!sessionHistory.length) return;
+
+  if(welcome) welcome.style.display="none";
+
+  sessionHistory.forEach(item=>{
+    addMessage(item.role,item.text,false);
+  });
+}
+
+restoreSession();
+
+/* =========================================================
+   PREVENT RAW MARKUP IN CHAT
+   ========================================================= */
+
+window.cleanPakAIAnswer=cleanPlainText;
+
+/* 
+   IMPORTANT:
+   All actual chatbot answer content is placed using
+   element.textContent, never innerHTML.
+   Therefore <li>, <div>, <script>, >, < and other markup
+   cannot appear as rendered HTML inside answers.
+*/
+</script>
+
+</body>
+</html>
